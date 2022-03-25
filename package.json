@@ -1,0 +1,20 @@
+{
+  "name": "@plyb/web-game-core",
+  "version": "1.0.2",
+  "description": "boilerplate code for webgames",
+  "main": "src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Plyb/web-game-core.git"
+  },
+  "author": "Koby Lewis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Plyb/web-game-core/issues"
+  },
+  "homepage": "https://github.com/Plyb/web-game-core#readme",
+  "dependencies": {
+    "@types/express": "^4.17.13",
+    "express": "^4.17.3"
+  }
+}
