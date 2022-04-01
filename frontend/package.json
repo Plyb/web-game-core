@@ -1,7 +1,7 @@
 {
-  "name": "@plyb/web-game-core",
+  "name": "@plyb/web-game-core-frontend",
   "version": "1.0.2",
-  "description": "boilerplate code for webgames",
+  "description": "frontend boilerplate code for webgames",
   "main": "src/index.ts",
   "repository": {
     "type": "git",
@@ -15,6 +15,7 @@
   "homepage": "https://github.com/Plyb/web-game-core#readme",
   "dependencies": {
     "@types/express": "^4.17.13",
+    "axios": "^0.26.1",
     "express": "^4.17.3"
   }
 }

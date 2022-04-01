@@ -8,8 +8,16 @@ const router = express.Router();
 // })
 
 router.post('/', async (req, res) => {
+    const username = req.body.username;
     const game = Game.createNewGame();
-    res.send({id: game.id});
+    const player = game.join(username);
+    res.send({gameId: game.id, playerId: player.id});
+})
+
+router.put('/', async (req, res) => {
+    const {id: gameId, username} = req.body;
+    const player = Game.games[gameId].join(username);
+    res.send({id: player.id});
 })
 
 // router.put('/start', async(req, res) => {
