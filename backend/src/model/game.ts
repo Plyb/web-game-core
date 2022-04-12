@@ -2,10 +2,10 @@ import Player from "./player";
 import { newUUID } from "./utils";
 
 export default class Game {
-    public static games : {[key: string]: Game} = {};
+    public static games : {[key: string]: (Game | undefined)} = {};
 
     public readonly id : string
-    private players: {[username: string]: Player} = {};
+    private players: {[username: string]: Player | undefined} = {};
 
     private constructor() {
         this.id = newUUID(Game.name);

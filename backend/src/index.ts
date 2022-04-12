@@ -1,4 +1,4 @@
-import express, { Router } from "express"
+import express, { NextFunction, Request, Response, Router } from "express"
 import bodyParser from "body-parser";
 // import { PlayersController } from "./playersController";
 import { GameController } from "./gameController";
@@ -14,21 +14,16 @@ export default (routes: Array<{path: string, router: Router}>) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', '*');
         res.setHeader('Access-Control-Allow-Headers', '*');
-        try {
-            next();
-        }
-        catch (error) {
-            console.log(error);
-            res.sendStatus(500);
-        }
+        next();
     })
 
-    // app.use("/api/players", PlayersController.routes);
     app.use("/api/game", GameController.routes);
     routes.forEach(route => {
         app.use(route.path, route.router);
     })
-    // app.use("/api/board", BoardController.routes);
+    app.use(function (error: any, req: Request, res: Response, next: NextFunction) {
+        res.status(500).send(error.message);
+    })
 
     app.listen(3000, () => console.log('Server listening on port 3000!'));
 }

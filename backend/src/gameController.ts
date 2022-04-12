@@ -3,27 +3,22 @@ import express from "express";
 
 const router = express.Router();
 
-// router.get('/', async (req, res) => {
-//     res.send({game: Game.instance});
-// })
-
-router.post('/', async (req, res) => {
+router.post('/', (req, res) => {
     const username = req.body.username;
     const game = Game.createNewGame();
     const player = game.join(username);
     res.send({gameId: game.id, playerId: player.id});
 })
 
-router.put('/', async (req, res) => {
+router.put('/', (req, res) => {
     const {id: gameId, username} = req.body;
-    const player = Game.games[gameId].join(username);
+    const game = Game.games[gameId];
+    if (!game) {
+        throw new Error("Game does not exist, did you type the code in correctly?");
+    }
+    const player = game.join(username);
     res.send({id: player.id});
 })
-
-// router.put('/start', async(req, res) => {
-//     Game.instance.startGame();
-//     res.sendStatus(200);
-// })
 
 export const GameController = {
     routes: router
