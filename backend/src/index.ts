@@ -1,8 +1,7 @@
 import express, { NextFunction, Request, Response, Router } from "express"
 import bodyParser from "body-parser";
-// import { PlayersController } from "./playersController";
-import { GameController } from "./gameController";
-// import { BoardController } from "./boardController";
+import { GameController } from "./controllers/gameController";
+import { LobbyController } from "./controllers/lobbyController";
 export default (routes: Array<{path: string, router: Router}>) => {
 
     const app = express();
@@ -18,6 +17,7 @@ export default (routes: Array<{path: string, router: Router}>) => {
     })
 
     app.use("/api/game", GameController.routes);
+    app.use("/api/lobby", LobbyController.routes);
     routes.forEach(route => {
         app.use(route.path, route.router);
     })

@@ -26,4 +26,12 @@ export default class Game {
         this.players[username] = player;
         return player;
     }
+
+    public leave(username: string): void {
+        delete this.players[username];
+    }
+
+    public getPlayerNames(): string[] {
+        return Object.values(this.players).map((player) => player.username);
+    }
 }

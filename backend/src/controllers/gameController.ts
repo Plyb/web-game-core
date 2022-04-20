@@ -1,4 +1,4 @@
-import Game from './model/game'
+import Game from '../model/game'
 import express from "express";
 
 const router = express.Router();

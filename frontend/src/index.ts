@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Lobby from './lobby';
 axios.defaults.baseURL = window.location.protocol + '//' + window.location.hostname + ':3000';
 
 async function startGame(username: string) {
@@ -35,7 +36,18 @@ function ensureIsError(e: any): Error {
 	}
 }
 
+function getGameId(): string | null {
+	return sessionStorage.getItem('gameId');
+}
+
+function getUsername(): string | null {
+	return sessionStorage.getItem('username');
+}
+
 export default {
 	startGame,
-	joinGame
+	joinGame,
+	getGameId,
+	getUsername,
+	Lobby,
 }
