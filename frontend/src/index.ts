@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Lobby from './lobby';
+import { BoardGameState } from '@plyb/web-game-core-shared';
 axios.defaults.baseURL = window.location.protocol + '//' + window.location.hostname + ':3000';
 
 async function startGame(username: string) {
@@ -43,6 +44,10 @@ function getGameId(): string | null {
 function getUsername(): string | null {
 	return sessionStorage.getItem('username');
 }
+
+export {
+	BoardGameState,
+};
 
 export default {
 	startGame,

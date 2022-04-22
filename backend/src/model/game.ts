@@ -6,6 +6,7 @@ export default class Game {
 
     public readonly id : string
     private players: {[username: string]: Player | undefined} = {};
+    private started = false;
 
     private constructor() {
         this.id = newUUID(Game.name);
@@ -33,5 +34,21 @@ export default class Game {
 
     public getPlayerNames(): string[] {
         return Object.values(this.players).map((player) => player.username);
+    }
+
+    public static getGame(gameId: string): Game {
+        const game = this.games[gameId];
+        if (!game) {
+            throw new Error("Game does not exist");
+        }
+        return game;
+    }
+
+    public start(): void {
+        this.started = true;
+    }
+
+    public isStarted(): boolean {
+        return this.started;
     }
 }

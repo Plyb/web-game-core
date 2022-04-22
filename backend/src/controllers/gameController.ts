@@ -12,12 +12,16 @@ router.post('/', (req, res) => {
 
 router.put('/', (req, res) => {
     const {id: gameId, username} = req.body;
-    const game = Game.games[gameId];
-    if (!game) {
-        throw new Error("Game does not exist, did you type the code in correctly?");
-    }
+    const game = Game.getGame(gameId);
     const player = game.join(username);
     res.send({id: player.id});
+})
+
+router.post('/start', (req, res) => {
+    const {gameId} = req.body;
+    const game = Game.getGame(gameId);
+    game.start();
+    res.send();
 })
 
 export const GameController = {

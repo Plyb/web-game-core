@@ -3,13 +3,16 @@ import Game from "../model/game";
 
 const router = express.Router();
 
-router.get('/players/:gameId', (req, res) => {
+router.get('/:gameId', (req, res) => {
     const gameId = req.params.gameId;
     const game = Game.games[gameId];
     if (!game) {
         throw new Error("Game does not exist");
     };
-    res.send(game.getPlayerNames());
+    res.send({
+        players: game.getPlayerNames(),
+        started: game.isStarted(),
+    });
 })
 
 router.delete('/kick/:gameId/:username', (req, res) => {
