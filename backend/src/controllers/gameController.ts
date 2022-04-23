@@ -24,6 +24,12 @@ router.post('/start', (req, res) => {
     res.send();
 })
 
+router.get('/state/:gameId', (req, res) => {
+    const gameId = req.params.gameId;
+    const game = Game.getGame(gameId);
+    res.send(game.gameState.toJSON());
+})
+
 export const GameController = {
     routes: router
 }

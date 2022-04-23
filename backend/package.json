@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@plyb/web-game-core-shared": "file:../shared",
     "@types/express": "^4.17.13",
     "express": "^4.17.3"
   }

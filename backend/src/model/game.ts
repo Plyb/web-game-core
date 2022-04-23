@@ -1,4 +1,4 @@
-import Player from "./player";
+import { BoardGameState, Player } from '@plyb/web-game-core-shared';
 import { newUUID } from "./utils";
 
 export default class Game {
@@ -7,6 +7,10 @@ export default class Game {
     public readonly id : string
     private players: {[username: string]: Player | undefined} = {};
     private started = false;
+    private _gameState: BoardGameState;
+    public get gameState(): BoardGameState {
+        return this._gameState;
+    }
 
     private constructor() {
         this.id = newUUID(Game.name);
@@ -46,6 +50,11 @@ export default class Game {
 
     public start(): void {
         this.started = true;
+        this._gameState = new BoardGameState(
+            {x: 10, y: 10},
+            Object.values(this.players),
+            {x: 8, y: 8},
+        );
     }
 
     public isStarted(): boolean {
