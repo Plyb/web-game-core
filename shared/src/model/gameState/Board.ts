@@ -27,4 +27,12 @@ export default class Board {
             piece,
         });
     }
+
+    public static copy(board: Board): Board {
+        const newBoard = new Board(board.size.x, board.size.y);
+        board.pieces.forEach((piece) => {
+            newBoard.placePiece(piece.piece, piece.x, piece.y);
+        });
+        return newBoard;
+    }
 }
