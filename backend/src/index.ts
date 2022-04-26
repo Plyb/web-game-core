@@ -2,7 +2,10 @@ import express, { NextFunction, Request, Response, Router } from "express"
 import bodyParser from "body-parser";
 import { GameController } from "./controllers/gameController";
 import { LobbyController } from "./controllers/lobbyController";
-export default (routes: Array<{path: string, router: Router}>) => {
+import ActionTypes, { ActionConstructor } from "@plyb/web-game-core-shared/src/actions/ActionTypes";
+type ActionList = { [key: string]: ActionConstructor };
+export default (routes: Array<{path: string, router: Router}>, usingActions: ActionList = {}) => {
+    ActionTypes.addActionTypes(usingActions);
 
     const app = express();
     app.use(bodyParser.json());

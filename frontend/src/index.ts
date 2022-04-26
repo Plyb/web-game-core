@@ -3,6 +3,8 @@ import Lobby from './lobby';
 import { Board, Piece, PieceLocation, Player } from '@plyb/web-game-core-shared';
 import BoardGameStateProxy from './BoardGameStateProxy';
 import { ShapeSpace } from '@plyb/web-game-core-shared/src/model/gameState/Piece';
+import PickUpItemAction from '@plyb/web-game-core-shared/src/actions/PickUpItemAction';
+import Action from '@plyb/web-game-core-shared/src/actions/Action';
 axios.defaults.baseURL = window.location.protocol + '//' + window.location.hostname + ':3000';
 
 async function startGame(username: string) {
@@ -59,6 +61,8 @@ export {
 	Player,
 	ShapeSpace,
 	Lobby,
+	PickUpItemAction,
+	Action,
 };
 
 export default {

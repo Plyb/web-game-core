@@ -1,5 +1,7 @@
 import Game from '../model/game'
 import express from "express";
+import ActionTypes from '@plyb/web-game-core-shared/src/actions/ActionTypes';
+import PickUpItemAction from '@plyb/web-game-core-shared/src/actions/PickUpItemAction';
 
 const router = express.Router();
 
@@ -28,6 +30,14 @@ router.get('/state/:gameId', (req, res) => {
     const gameId = req.params.gameId;
     const game = Game.getGame(gameId);
     res.send(game.gameState.toJSON());
+})
+
+router.post('/state/action', (req, res) => {
+    const gameId = req.body.gameId;
+    const game = Game.getGame(gameId);
+    PickUpItemAction;
+    game.gameState.executeAction(ActionTypes.actionTypes[req.body.actionType], ...req.body.actionArgs);
+    res.send();
 })
 
 export const GameController = {

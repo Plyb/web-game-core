@@ -1,7 +1,11 @@
+import Action from "../../actions/Action";
 import Player, { PlayerId } from "../player";
 import Board, { Vec2 } from "./Board";
-import Piece from "./Piece";
+import Piece, { ShapeSpace } from "./Piece";
 
+export type ParametersExceptFirst<F> = 
+    F extends new (arg0: BoardGameState, ...rest: infer R) => any ? R : never;
+export type ActionConstructor = new (gameState: BoardGameState, ...args: any[]) => Action;
 export default class BoardGameState {
     protected _hub: Board;
     public get hub(): Board {
@@ -32,6 +36,15 @@ export default class BoardGameState {
         })
 
         this._players = players.sort((a, b) => Math.random() - 0.5);
+        this.hub.placePiece(new (class extends Piece {
+            public readonly shape = [
+                [ShapeSpace.Filled, ShapeSpace.None],
+                [ShapeSpace.Filled, ShapeSpace.None],
+                [ShapeSpace.Filled, ShapeSpace.Filled],
+            ];
+
+            public readonly pivot = { x: 0, y: 2 };
+        })(), 5, 5); // for testing
     }
 
     public toJSON(): string {
@@ -43,5 +56,11 @@ export default class BoardGameState {
             mats,
             inventories,
         });
+    }
+
+    public async executeAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
+        const actionInstance = new actionType(this, ...args);
+        actionInstance.execute();
+        return actionInstance;
     }
 }

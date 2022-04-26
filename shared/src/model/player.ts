@@ -1,4 +1,4 @@
-import { newUUID } from "../../../backend/src/model/utils";
+import { newUUID } from "./utils";
 
 export type PlayerId = string;
 export default class Player {

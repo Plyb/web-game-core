@@ -1,5 +1,5 @@
 import { BoardGameState, Player } from '@plyb/web-game-core-shared';
-import { newUUID } from "./utils";
+import { newUUID } from "@plyb/web-game-core-shared/src/model/utils";
 
 export default class Game {
     public static games : {[key: string]: (Game | undefined)} = {};
