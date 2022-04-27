@@ -1,7 +1,8 @@
-import {  plainToInstance } from "class-transformer";
+import RotatePieceAction from "../../actions/RotatePieceAction";
+import { PlayerId } from "../player";
 import { newUUID } from "../utils";
-import { Vec2 } from "./Board";
-import { PieceTypes } from "./PieceTypes";
+import BoardGameState from "./BoardGameState";
+import { Vec2 } from "./types";
 
 export enum ShapeSpace {
     None,
@@ -11,7 +12,7 @@ export enum ShapeSpace {
 export type PieceId = string;
 export type Interaction = {
     label: string,
-    action: () => void
+    action: (gameState: BoardGameState) => void
 }
 
 export default abstract class Piece {
@@ -20,15 +21,28 @@ export default abstract class Piece {
 
     public abstract readonly pivot: Vec2;
 
+    public rotation: number = 0;
+
     constructor(public readonly id: PieceId = newUUID(Piece.name, 16)) {}
 
-    get inventoryInteractions(): Interaction[] {
+    public getInventoryInteractions(inventoryId: PlayerId): Interaction[] {
         return [
-            { label: 'test', action: () => console.log('test') },
+            { label: 'Rotate left', action: (gameState) => {
+                gameState.executeAction(RotatePieceAction, this.id, inventoryId, 90);
+            }},
+            { label: 'Rotate right', action: (gameState) => {
+                gameState.executeAction(RotatePieceAction, this.id, inventoryId, -90);
+            }},
         ];
     }
 
-    public static copy(piece: Piece): Piece {
-        return plainToInstance(PieceTypes.pieceTypes[piece.__type], piece);
+    public getPivotPercents(): Vec2 {
+        const { x, y } = this.pivot;
+        const width = this.shape[0].length;
+        const height = this.shape.length;
+        return {
+            x: (x + 0.5) / width,
+            y: (y + 0.5) / height,
+        };
     }
 }

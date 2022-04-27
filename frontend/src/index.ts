@@ -7,7 +7,7 @@ import { ShapeSpace, Interaction } from '@plyb/web-game-core-shared/src/model/ga
 import PickUpItemAction from '@plyb/web-game-core-shared/src/actions/PickUpItemAction';
 import PlaceFromInventoryAction from '@plyb/web-game-core-shared/src/actions/PlaceFromInventoryAction';
 import Action from '@plyb/web-game-core-shared/src/actions/Action';
-import { Vec2 } from '@plyb/web-game-core-shared/src/model/gameState/Board';
+import { Vec2 } from '@plyb/web-game-core-shared/src/model/gameState/types';
 axios.defaults.baseURL = window.location.protocol + '//' + window.location.hostname + ':3000';
 
 async function startGame(username: string) {

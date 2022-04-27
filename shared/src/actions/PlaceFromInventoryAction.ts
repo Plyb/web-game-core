@@ -1,8 +1,8 @@
 import BoardGameState from "../model/gameState/BoardGameState";
-import { Vec2 } from "../model/gameState/Board";
 import { BoardId } from "../model/gameState/Board";
 import Action from "./Action";
 import { PlayerId } from "../model/player";
+import { Vec2 } from "../model/gameState/types";
 
 export default class PlaceFromInventoryAction extends Action {
     public readonly pieceIndex: number;

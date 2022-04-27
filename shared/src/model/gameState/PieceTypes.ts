@@ -1,3 +1,5 @@
+import { plainToInstance } from "class-transformer";
+import { PlayerId } from "../player";
 import Piece, { Interaction, ShapeSpace } from "./Piece";
 
 
@@ -10,8 +12,8 @@ export class TestPiece extends Piece {
 
     public readonly pivot = { x: 0, y: 2 };
 
-    public get inventoryInteractions(): Interaction[] {
-        return super.inventoryInteractions
+    public getInventoryInteractions(inventoryId: PlayerId): Interaction[] {
+        return super.getInventoryInteractions(inventoryId);
     }
 }
 
@@ -27,6 +29,10 @@ export class PieceTypes {
         for (const key in constructors) {
             this.addPieceType(constructors[key], key);
         }
+    }
+
+    public static copy(piece: Piece): Piece {
+        return plainToInstance(PieceTypes.pieceTypes[piece.__type], piece);
     }
 }
 

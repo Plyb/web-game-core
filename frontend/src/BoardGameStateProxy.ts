@@ -4,6 +4,7 @@ import axios from "axios";
 import Action from "@plyb/web-game-core-shared/src/actions/Action";
 import { ActionConstructor, ParametersExceptFirst } from "@plyb/web-game-core-shared/src/model/gameState/BoardGameState";
 import { BoardId } from "@plyb/web-game-core-shared/src/model/gameState/Board";
+import { PieceTypes } from "@plyb/web-game-core-shared/src/model/gameState/PieceTypes";
 
 export default class BoardGameStateProxy extends BoardGameState {
     private intervalId: number = -1;
@@ -45,6 +46,6 @@ export default class BoardGameStateProxy extends BoardGameState {
             .map(([id, board]: [BoardId, Board]) => [id, Board.copy(board)]));
         this._players = plain.players;
         this._inventories = new Map(Object.entries(plain.inventories)
-            .map(([id, pieces]: [string, Piece[]]) => [id, pieces.map(Piece.copy)]));
+            .map(([id, pieces]: [string, Piece[]]) => [id, pieces.map(PieceTypes.copy)]));
     }
 }
