@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response, Router } from "express"
+import 'reflect-metadata';
 import bodyParser from "body-parser";
 import { GameController } from "./controllers/gameController";
 import { LobbyController } from "./controllers/lobbyController";

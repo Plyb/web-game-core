@@ -1,7 +1,9 @@
+import { plainToClass, Transform, Type, TransformInstanceToPlain, Expose } from "class-transformer";
 import Action from "../../actions/Action";
 import Player, { PlayerId } from "../player";
 import Board, { BoardId, Vec2 } from "./Board";
-import Piece, { PieceId, ShapeSpace } from "./Piece";
+import Piece, { PieceId } from "./Piece";
+import { TestPiece } from "./PieceTypes";
 
 export type ParametersExceptFirst<F> = 
     F extends new (arg0: BoardGameState, ...rest: infer R) => any ? R : never;
@@ -36,15 +38,7 @@ export default class BoardGameState {
         })
 
         this._players = players.sort((a, b) => Math.random() - 0.5);
-        this.hub.placePiece(new (class extends Piece {
-            public readonly shape = [
-                [ShapeSpace.Filled, ShapeSpace.None],
-                [ShapeSpace.Filled, ShapeSpace.None],
-                [ShapeSpace.Filled, ShapeSpace.Filled],
-            ];
-
-            public readonly pivot = { x: 0, y: 2 };
-        })(), 5, 5); // for testing
+        this.hub.placePiece(new TestPiece(), 5, 5); // for testing
     }
 
     public toJSON(): string {

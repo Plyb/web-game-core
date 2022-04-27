@@ -1,4 +1,4 @@
-import Piece from "../model/gameState/Piece";
+import Interaction from "../model/gameState/Piece";
 import Board, { PieceLocation } from "../model/gameState/Board";
 import BoardGameState from "../model/gameState/BoardGameState";
 import { PlayerId } from "../model/player";
@@ -8,7 +8,7 @@ export default class PickUpItemAction extends Action {
     public readonly board: Board;
     public readonly pieceIndex: number;
     public readonly pieceLocation: PieceLocation;
-    public readonly inventory: Piece[];
+    public readonly inventory: Interaction[];
 
     constructor(
         public readonly gameState: BoardGameState,

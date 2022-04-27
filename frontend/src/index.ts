@@ -1,8 +1,9 @@
 import axios from 'axios'
+import 'reflect-metadata'; 
 import Lobby from './lobby';
 import { Board, Piece, PieceLocation, Player } from '@plyb/web-game-core-shared';
 import BoardGameStateProxy from './BoardGameStateProxy';
-import { ShapeSpace } from '@plyb/web-game-core-shared/src/model/gameState/Piece';
+import { ShapeSpace, Interaction } from '@plyb/web-game-core-shared/src/model/gameState/Piece';
 import PickUpItemAction from '@plyb/web-game-core-shared/src/actions/PickUpItemAction';
 import PlaceFromInventoryAction from '@plyb/web-game-core-shared/src/actions/PlaceFromInventoryAction';
 import Action from '@plyb/web-game-core-shared/src/actions/Action';
@@ -67,6 +68,7 @@ export {
 	PlaceFromInventoryAction,
 	Action,
 	Vec2,
+	Interaction,
 };
 
 export default {

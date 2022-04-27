@@ -22,11 +22,7 @@ export default class BoardGameStateProxy extends BoardGameState {
 
     public async load() {
         const response = await axios.get(`api/game/state/${Core.getGameId()}`);
-        this._hub = Board.copy(response.data.hub);
-        this._mats = new Map((Object.entries(response.data.mats) as [BoardId, Board][])
-            .map(([id, board]: [BoardId, Board]) => [id, Board.copy(board)]));
-        this._players = response.data.players;
-        this._inventories = new Map(Object.entries(response.data.inventories));
+        this.updateFromPlain(response.data);
     }
 
     public getInventory(): Piece[] {
@@ -41,5 +37,14 @@ export default class BoardGameStateProxy extends BoardGameState {
             actionArgs: args,
         })
         return action;
+    }
+
+    private updateFromPlain(plain: BoardGameState) {
+        this._hub = Board.copy(plain.hub);
+        this._mats = new Map((Object.entries(plain.mats) as [BoardId, Board][])
+            .map(([id, board]: [BoardId, Board]) => [id, Board.copy(board)]));
+        this._players = plain.players;
+        this._inventories = new Map(Object.entries(plain.inventories)
+            .map(([id, pieces]: [string, Piece[]]) => [id, pieces.map(Piece.copy)]));
     }
 }
