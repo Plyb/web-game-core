@@ -1,3 +1,4 @@
+import { PlayerId } from "../player";
 import Piece from "./Piece";
 
 export type PieceLocation = Vec2 & {
@@ -9,11 +10,13 @@ export type Vec2 = {
     y: number;
 }
 
+export type BoardId = PlayerId | 'hub';
+
 export default class Board {
     public readonly pieces: PieceLocation[] = [];
     public readonly size: Vec2;
 
-    constructor(x: number, y: number) {
+    constructor(x: number, y: number, public readonly id: BoardId) {
         this.size = {
             x,
             y,
@@ -29,7 +32,7 @@ export default class Board {
     }
 
     public static copy(board: Board): Board {
-        const newBoard = new Board(board.size.x, board.size.y);
+        const newBoard = new Board(board.size.x, board.size.y, board.id);
         board.pieces.forEach((piece) => {
             newBoard.placePiece(piece.piece, piece.x, piece.y);
         });

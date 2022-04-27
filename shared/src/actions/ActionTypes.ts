@@ -1,5 +1,6 @@
 import Action from "./Action";
 import PickUpItemAction from "./PickUpItemAction";
+import PlaceFromInventoryAction from "./PlaceFromInventoryAction";
 
 
 export type ActionConstructor = new (...args: any[]) => Action;
@@ -19,6 +20,7 @@ export default class ActionTypes {
 
 const defaultActionTypes = {
     PickUpItemAction,
+    PlaceFromInventoryAction,
 }
 
 ActionTypes.addActionTypes(defaultActionTypes);
