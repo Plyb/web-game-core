@@ -1,6 +1,7 @@
 import RotatePieceAction from "../../actions/RotatePieceAction";
 import { PlayerId } from "../player";
 import { newUUID } from "../utils";
+import { BoardId } from "./Board";
 import BoardGameState from "./BoardGameState";
 import { Vec2 } from "./types";
 
@@ -34,6 +35,17 @@ export default abstract class Piece {
                 gameState.executeAction(RotatePieceAction, this.id, inventoryId, -90);
             }},
         ];
+    }
+
+    public getBoardInteractions(boardId: BoardId): Interaction[] {
+        return [
+            { label: 'Rotate left', action: (gameState) => {
+                gameState.executeAction(RotatePieceAction, this.id, boardId, 90, true);
+            }},
+            { label: 'Rotate right', action: (gameState) => {
+                gameState.executeAction(RotatePieceAction, this.id, boardId, -90, true);
+            }},
+        ]
     }
 
     public getPivotPercents(): Vec2 {

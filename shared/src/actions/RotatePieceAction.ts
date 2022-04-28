@@ -1,3 +1,5 @@
+import Piece from "../model/gameState/Piece";
+import { BoardId } from "../model/gameState/Board";
 import BoardGameState from "../model/gameState/BoardGameState";
 import { PlayerId } from "../model/player";
 import Action from "./Action";
@@ -6,35 +8,45 @@ export default class RotatePieceAction extends Action {
     constructor(
         public readonly gameState: BoardGameState,
         public readonly pieceId: string,
-        public readonly playerId: PlayerId, // The id of the player who owns the piece
+        public readonly locationId: PlayerId | BoardId, // The id of the player who owns the piece or 'hub'
         public readonly rotation: number,
+        public readonly onBoard: boolean = false,
     ) {
         super(gameState);
     }
 
-    public execute(): void {
-        const inventory = this.gameState.inventories.get(this.playerId);
-        if (!inventory) {
-            throw new Error(`Could not find inventory for player ${this.playerId}`);
+    private getLocation(): Piece[] | undefined {
+        if (this.onBoard) {
+            return this.gameState.getBoard(this.locationId)?.pieces
+                .map((pieceLocation) => pieceLocation.piece);
+        } else {
+            return this.gameState.inventories.get(this.locationId);
         }
-        const pieceIndex = inventory.findIndex((piece) => piece.id === this.pieceId);
+    }
+
+    public execute(): void {
+        const location = this.getLocation();
+        if (!location) {
+            throw new Error(`Could not find location ${this.locationId} for piece`);
+        }
+        const pieceIndex = location.findIndex((piece) => piece.id === this.pieceId);
         if (pieceIndex === -1) {
             throw new Error(`Could not find piece ${this.pieceId}`);
         }
-        const piece = inventory[pieceIndex];
+        const piece = location[pieceIndex];
         piece.rotation += this.rotation;
     }
 
     public undo(): void {
-        const inventory = this.gameState.inventories.get(this.playerId);
-        if (!inventory) {
-            throw new Error(`Could not find inventory for player ${this.playerId}`);
+        const location = this.getLocation();
+        if (!location) {
+            throw new Error(`Could not find location ${this.locationId} for piece`);
         }
-        const pieceIndex = inventory.findIndex((piece) => piece.id === this.pieceId);
+        const pieceIndex = location.findIndex((piece) => piece.id === this.pieceId);
         if (pieceIndex === -1) {
             throw new Error(`Could not find piece ${this.pieceId}`);
         }
-        const piece = inventory[pieceIndex];
+        const piece = location[pieceIndex];
         piece.rotation -= this.rotation;
     }
 }
