@@ -32,12 +32,21 @@ router.get('/state/:gameId', (req, res) => {
     res.send(game.gameState.toJSON());
 })
 
+router.get('/state/actions/:gameId/:lastGotten', (req, res) => {
+    const gameId = req.params.gameId;
+    const lastGotten = parseInt(req.params.lastGotten);
+    const game = Game.getGame(gameId);
+    const actions = game.gameState.actionHistory.getSince(lastGotten);
+    res.send({actions, timestamp: game.gameState.actionHistory.getLastTimestamp()});
+})
+
 router.post('/state/action', (req, res) => {
     const gameId = req.body.gameId;
+    const lastGotten = req.body.lastGotten;
     const game = Game.getGame(gameId);
-    PickUpItemAction;
     game.gameState.executeAction(ActionTypes.actionTypes[req.body.actionType], ...req.body.actionArgs);
-    res.send();
+    const actions = game.gameState.actionHistory.getSince(lastGotten);
+    res.send({actions: actions.slice(0, actions.length - 1), timestamp: game.gameState.actionHistory.getLastTimestamp()});
 })
 
 export const GameController = {

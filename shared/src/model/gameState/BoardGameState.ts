@@ -1,6 +1,7 @@
 import { plainToClass, Transform, Type, TransformInstanceToPlain, Expose } from "class-transformer";
 import Action from "../../actions/Action";
 import Player, { PlayerId } from "../player";
+import ActionHistory from "./ActionHistory";
 import Board, { BoardId } from "./Board";
 import Piece, { PieceId } from "./Piece";
 import { TestPiece } from "./PieceTypes";
@@ -10,6 +11,9 @@ export type ParametersExceptFirst<F> =
     F extends new (arg0: BoardGameState, ...rest: infer R) => any ? R : never;
 export type ActionConstructor = new (gameState: BoardGameState, ...args: any[]) => Action;
 export default class BoardGameState {
+    public readonly actionHistory: ActionHistory = new ActionHistory();
+    public lastActionGottenTimestamp: number = 0;
+
     protected _hub: Board;
     public get hub(): Board {
         return this._hub;
@@ -50,12 +54,15 @@ export default class BoardGameState {
             players: this._players,
             mats,
             inventories,
+            timestamp: this.lastActionGottenTimestamp,
         });
     }
 
     public async executeAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
         const actionInstance = new actionType(this, ...args);
         actionInstance.execute();
+        this.actionHistory.add(actionInstance, args);
+        this.lastActionGottenTimestamp = Date.now();
         return actionInstance;
     }
 
