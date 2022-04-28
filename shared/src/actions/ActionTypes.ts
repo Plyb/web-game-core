@@ -1,7 +1,9 @@
 import Action from "./Action";
 import PickUpItemAction from "./PickUpItemAction";
 import PlaceFromInventoryAction from "./PlaceFromInventoryAction";
+import RedoAction from "./RedoAction";
 import RotatePieceAction from "./RotatePieceAction";
+import UndoAction from "./UndoAction";
 
 
 export type ActionConstructor = new (...args: any[]) => Action;
@@ -23,6 +25,8 @@ const defaultActionTypes = {
     PickUpItemAction,
     PlaceFromInventoryAction,
     RotatePieceAction,
+    UndoAction,
+    RedoAction,
 }
 
 ActionTypes.addActionTypes(defaultActionTypes);

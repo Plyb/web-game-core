@@ -46,14 +46,17 @@ export default class BoardGameStateProxy extends BoardGameState {
 
     private async update() {
         const response = await axios.get(`api/game/state/actions/${Core.getGameId()}/${this.lastActionGottenTimestamp}`);
-        this.applyActions(response.data.actions, response.data.timestamp);
+        this.applyActions(response.data.actions, response.data.timestamp, true);
     }
 
-    private applyActions(actions: ActionDefinition[], timestamp: number) {
+    private applyActions(actions: ActionDefinition[], timestamp: number, addToHistory = false) {
         this.lastActionGottenTimestamp = timestamp;
         actions.forEach((actionDef: ActionDefinition) => {
             const action = new (ActionTypes.actionTypes[actionDef.type])(this, ...actionDef.args);
             action.execute();
+            if (addToHistory) {
+                this.actionHistory.add(action, actionDef.args);
+            }
         });
 
     }

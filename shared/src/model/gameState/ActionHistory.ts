@@ -1,5 +1,5 @@
+import UndoAction from "../../actions/UndoAction";
 import Action from "../../actions/Action";
-import { ActionConstructor } from "./BoardGameState";
 
 class ActionNode {
     public readonly timestamp = Date.now();
@@ -52,5 +52,23 @@ export default class ActionHistory {
 
     getLastTimestamp() {
         return this.last ? this.last.timestamp : 0;
+    }
+
+    getNextUndoRedoAction(redo = false): Action | null {
+        let previousUndos = 0;
+        let currentAction = this.last;
+        while (currentAction !== null) {
+            if ((currentAction.action.constructor === UndoAction) != redo) {
+                previousUndos++;
+            } else {
+                if (previousUndos === 0) {
+                    return currentAction.action;
+                } else {
+                    previousUndos--;
+                }
+            }
+            currentAction = currentAction.prev;
+        }
+        return null;
     }
 }
