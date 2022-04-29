@@ -3,8 +3,8 @@ import Action from "../../actions/Action";
 import Player, { PlayerId } from "../player";
 import ActionHistory from "./ActionHistory";
 import Board, { BoardId } from "./Board";
-import Piece, { PieceId } from "./Piece";
-import { TestPiece } from "./PieceTypes";
+import Piece, { PieceId } from "./pieces/Piece";
+import { TestPiece } from "./pieces/PieceTypes";
 import { Vec2 } from "./types";
 
 export type ParametersExceptFirst<F> = 

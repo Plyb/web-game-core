@@ -1,9 +1,9 @@
-import RotatePieceAction from "../../actions/RotatePieceAction";
-import { PlayerId } from "../player";
-import { newUUID } from "../utils";
-import { BoardId } from "./Board";
-import BoardGameState from "./BoardGameState";
-import { Vec2 } from "./types";
+import RotatePieceAction from "../../../actions/RotatePieceAction";
+import { PlayerId } from "../../player";
+import { newUUID } from "../../utils";
+import { BoardId } from "../Board";
+import BoardGameState from "../BoardGameState";
+import { Vec2 } from "../types";
 
 export enum ShapeSpace {
     None,

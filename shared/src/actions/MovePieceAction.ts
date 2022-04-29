@@ -1,7 +1,7 @@
 import { BoardId } from "../model/gameState/Board";
 import { PlayerId } from "../model/player";
 import BoardGameState from "../model/gameState/BoardGameState";
-import Piece, { PieceId } from "../model/gameState/Piece";
+import Piece, { PieceId } from "../model/gameState/pieces/Piece";
 import Action from "./Action";
 
 export enum ContainerType {

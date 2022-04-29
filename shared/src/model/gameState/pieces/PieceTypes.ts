@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
-import { PlayerId } from "../player";
-import Piece, { Interaction, ShapeSpace } from "./Piece";
+import { PlayerId } from "../../player";
+import Piece, { Interaction, ShapeSpace } from "../pieces/Piece";
 
 
 export class TestPiece extends Piece {

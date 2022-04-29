@@ -1,4 +1,4 @@
-import Piece from "../model/gameState/Piece";
+import Piece from "../model/gameState/pieces/Piece";
 import { BoardId } from "../model/gameState/Board";
 import BoardGameState from "../model/gameState/BoardGameState";
 import { PlayerId } from "../model/player";

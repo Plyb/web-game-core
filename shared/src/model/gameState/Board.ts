@@ -1,6 +1,6 @@
 import { PlayerId } from "../player";
-import Piece from "./Piece";
-import { PieceTypes } from "./PieceTypes";
+import Piece from "./pieces/Piece";
+import { PieceTypes } from "./pieces/PieceTypes";
 import { Vec2 } from "./types";
 
 export type PieceLocation = Vec2 & {

@@ -4,7 +4,7 @@ import axios from "axios";
 import Action from "@plyb/web-game-core-shared/src/actions/Action";
 import { ActionConstructor, ParametersExceptFirst } from "@plyb/web-game-core-shared/src/model/gameState/BoardGameState";
 import { BoardId } from "@plyb/web-game-core-shared/src/model/gameState/Board";
-import { PieceTypes } from "@plyb/web-game-core-shared/src/model/gameState/PieceTypes";
+import { PieceTypes } from "@plyb/web-game-core-shared/src/model/gameState/pieces/PieceTypes";
 import { ActionDefinition } from "@plyb/web-game-core-shared/src/model/gameState/ActionHistory";
 import ActionTypes from "@plyb/web-game-core-shared/src/actions/ActionTypes";
 import { MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePieceAction";
