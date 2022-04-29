@@ -15,6 +15,14 @@ export class TestPiece extends Piece {
     public getInventoryInteractions(inventoryId: PlayerId): Interaction[] {
         return super.getInventoryInteractions(inventoryId);
     }
+
+    public getName(): string {
+        return "Test Piece";
+    }
+
+    public getDescription(): string {
+        return "A test piece";
+    }
 }
 
 type PieceConstructor = new (...args: any) => Piece;
