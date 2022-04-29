@@ -1,6 +1,5 @@
 import Action from "./Action";
-import PickUpItemAction from "./PickUpItemAction";
-import PlaceFromInventoryAction from "./PlaceFromInventoryAction";
+import MovePieceAction from "./MovePieceAction";
 import RedoAction from "./RedoAction";
 import RotatePieceAction from "./RotatePieceAction";
 import UndoAction from "./UndoAction";
@@ -22,11 +21,10 @@ export default class ActionTypes {
 }
 
 const defaultActionTypes = {
-    PickUpItemAction,
-    PlaceFromInventoryAction,
     RotatePieceAction,
     UndoAction,
     RedoAction,
+    MovePieceAction,
 }
 
 ActionTypes.addActionTypes(defaultActionTypes);

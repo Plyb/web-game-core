@@ -28,6 +28,14 @@ export default class Board {
         });
     }
 
+    public placePieceCellIndex(piece: Piece, cellIndex: number): void {
+        this.pieces.push({
+            x: cellIndex % this.size.x,
+            y: Math.floor(cellIndex / this.size.x),
+            piece,
+        });
+    }
+
     public static copy(board: Board): Board {
         const newBoard = new Board(board.size.x, board.size.y, board.id);
         board.pieces.forEach((piece) => {

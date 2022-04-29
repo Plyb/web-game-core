@@ -1,7 +1,6 @@
 import Game from '../model/game'
 import express from "express";
 import ActionTypes from '@plyb/web-game-core-shared/src/actions/ActionTypes';
-import PickUpItemAction from '@plyb/web-game-core-shared/src/actions/PickUpItemAction';
 
 const router = express.Router();
 

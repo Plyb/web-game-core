@@ -7,8 +7,14 @@ import { BoardId } from "@plyb/web-game-core-shared/src/model/gameState/Board";
 import { PieceTypes } from "@plyb/web-game-core-shared/src/model/gameState/PieceTypes";
 import { ActionDefinition } from "@plyb/web-game-core-shared/src/model/gameState/ActionHistory";
 import ActionTypes from "@plyb/web-game-core-shared/src/actions/ActionTypes";
+import { MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePieceAction";
 
+type DragPiece = {
+    piece: Piece,
+    from: MoveLocation,
+}
 export default class BoardGameStateProxy extends BoardGameState {
+    public draggingPiece: DragPiece | null = null;
     private intervalId: number = -1;
     constructor() {
         super({x: 0, y: 0}, [], {x: 0, y: 0});

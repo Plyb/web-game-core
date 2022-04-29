@@ -44,6 +44,7 @@ export default class BoardGameState {
 
         this._players = players.sort((a, b) => Math.random() - 0.5);
         this.hub.placePiece(new TestPiece(), 5, 5); // for testing
+        this.hub.placePiece(new TestPiece(), 2, 2); // for testing
     }
 
     public toJSON(): string {
@@ -64,19 +65,6 @@ export default class BoardGameState {
         this.actionHistory.add(actionInstance, args);
         this.lastActionGottenTimestamp = Date.now();
         return actionInstance;
-    }
-
-    public placePieceFromInventory(pieceId: PieceId, playerId: PlayerId, board: Board, location: Vec2): void {
-        const inventory = this.inventories.get(playerId);
-        if (!inventory) {
-            throw new Error(`Could not find inventory for player ${playerId}`);
-        }
-        const pieceIndex = inventory.findIndex((piece) => piece.id === pieceId);
-        if (pieceIndex === -1) {
-            throw new Error(`Could not find piece ${pieceId}`);
-        }
-        const piece = inventory.splice(pieceIndex, 1)[0];
-        board.placePiece(piece, location.x, location.y);
     }
 
     public getBoard(boardId: BoardId) {
