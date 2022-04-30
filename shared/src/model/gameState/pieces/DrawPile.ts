@@ -5,10 +5,12 @@ import Piece, { Interaction, ShapeSpace } from "./Piece";
 import { Type } from "class-transformer";
 import { PieceTypes } from "./PieceTypes";
 import ShuffleAction from "../../../actions/ShuffleAction";
+import FlipDrawPileAction from "../../../actions/FlipDrawPileAction";
 
 export enum Interactions {
     Draw = "Draw",
     Shuffle = "Shuffle",
+    Flip = "Flip",
 }
 export default class DrawPile<PieceType extends Piece> extends Piece {
     @Type(() => Piece, {
@@ -36,6 +38,12 @@ export default class DrawPile<PieceType extends Piece> extends Piece {
                     gameState.executeAction(ShuffleAction, boardId, this.id);
                     return Interactions.Shuffle;
                 }
+            }, {
+                label: 'Flip',
+                action: (gameState) => {
+                    gameState.executeAction(FlipDrawPileAction, boardId, this.id);
+                    return Interactions.Flip;
+                }
             });
         }
         return interactions;
@@ -43,6 +51,11 @@ export default class DrawPile<PieceType extends Piece> extends Piece {
 
     public shouldShowTopPiece(): boolean {
         return this.showTopPiece && this.pieces.length > 0;
+    }
+
+    public flip() {
+        this.showTopPiece = !this.showTopPiece;
+        this.pieces.reverse();
     }
 
     public get shape() {
