@@ -52,7 +52,12 @@ export default class BoardGameState {
             new PlayingCard(1, Suit.Clubs),
             new PlayingCard(2, Suit.Clubs),
             new PlayingCard(3, Suit.Clubs),
-        ]), 8, 7); // for testing
+        ], true), 8, 7); // for testing
+        this.hub.placePiece(new DrawPile<PlayingCard>([
+            new PlayingCard(1, Suit.Clubs),
+            new PlayingCard(2, Suit.Clubs),
+            new PlayingCard(3, Suit.Clubs),
+        ]), 4, 7); // for testing
     }
 
     public toJSON(): string {

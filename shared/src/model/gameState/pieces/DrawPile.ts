@@ -15,8 +15,8 @@ export default class DrawPile<PieceType extends Piece> extends Piece {
         discriminator: PieceTypes.getClassTransformerDiscriminator(),
     })
     public readonly pieces: PieceType[];
-
-    constructor(pieces: PieceType[]) {
+    
+    constructor(pieces: PieceType[], private showTopPiece: boolean = false) {
         super();
         this.pieces = pieces;
     }
@@ -41,10 +41,20 @@ export default class DrawPile<PieceType extends Piece> extends Piece {
         return interactions;
     }
 
-    public readonly shape = [
-        [ShapeSpace.Filled, ShapeSpace.Filled],
-        [ShapeSpace.Filled, ShapeSpace.Filled],
-    ]
+    public shouldShowTopPiece(): boolean {
+        return this.showTopPiece && this.pieces.length > 0;
+    }
+
+    public get shape() {
+        if (this.shouldShowTopPiece()) {
+            return this.pieces[this.pieces.length - 1].shape;
+        } else {
+            return [
+                [ShapeSpace.Filled, ShapeSpace.Filled],
+                [ShapeSpace.Filled, ShapeSpace.Filled],
+            ]
+        }
+    }
     public readonly pivot = {
         x: 0,
         y: 0,
