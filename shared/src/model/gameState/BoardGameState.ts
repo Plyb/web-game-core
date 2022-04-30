@@ -4,6 +4,7 @@ import Player, { PlayerId } from "../player";
 import ActionHistory from "./ActionHistory";
 import Board, { BoardId } from "./Board";
 import Piece, { PieceId } from "./pieces/Piece";
+import DrawPile from "./pieces/DrawPile";
 import { TestPiece } from "./pieces/PieceTypes";
 import PlayingCard, { Suit } from "./pieces/PlayingCardPiece";
 import { Vec2 } from "./types";
@@ -47,6 +48,11 @@ export default class BoardGameState {
         this.hub.placePiece(new TestPiece(), 5, 5); // for testing
         this.hub.placePiece(new TestPiece(), 2, 2); // for testing
         this.hub.placePiece(new PlayingCard(7, Suit.Clubs), 7, 2); // for testing
+        this.hub.placePiece(new DrawPile<PlayingCard>([
+            new PlayingCard(1, Suit.Clubs),
+            new PlayingCard(2, Suit.Clubs),
+            new PlayingCard(3, Suit.Clubs),
+        ]), 8, 7); // for testing
     }
 
     public toJSON(): string {

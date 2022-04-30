@@ -1,7 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { PlayerId } from "../../player";
 import Piece, { Interaction, ShapeSpace } from "../pieces/Piece";
-import PlayingCard from "./PlayingCardPiece";
 
 
 export class TestPiece extends Piece {
@@ -43,11 +42,15 @@ export class PieceTypes {
     public static copy(piece: Piece): Piece {
         return plainToInstance(PieceTypes.pieceTypes[piece.__type], piece);
     }
+
+    public static getClassTransformerDiscriminator() {
+        return {
+            property: '__type',
+            get subTypes() {
+                return Object.keys(PieceTypes.pieceTypes).map(key => {
+                    return { value: PieceTypes.pieceTypes[key], name: key };
+                });
+            }
+        };
+    }
 }
-
-const defaultPieceTypes = {
-    TestPiece,
-    PlayingCard,
-};
-
-PieceTypes.addPieceTypes(defaultPieceTypes);

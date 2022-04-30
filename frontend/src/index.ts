@@ -1,5 +1,6 @@
 import axios from 'axios'
 import 'reflect-metadata'; 
+import '@plyb/web-game-core-shared/src/model/gameState/pieces/defaultPieceTypes';
 import Lobby from './lobby';
 import { Board, Piece, PieceLocation, Player } from '@plyb/web-game-core-shared';
 import BoardGameStateProxy from './BoardGameStateProxy';

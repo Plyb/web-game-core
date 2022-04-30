@@ -55,7 +55,7 @@ export default abstract class Piece {
         ];
     }
 
-    public getBoardInteractions(boardId: BoardId): Interaction[] {
+    public getBoardInteractions(boardId: BoardId, interactingPlayer: PlayerId): Interaction[] {
         return [
             inspectInteraction,
             { label: 'Rotate left', action: (gameState) => {
@@ -77,5 +77,13 @@ export default abstract class Piece {
             x: (x + 0.5) / width,
             y: (y + 0.5) / height,
         };
+    }
+
+    public onOtherPlacedOn(otherPiece: Piece) {
+        // Can be overriden by subclasses
+    }
+
+    public onPlacedOnOther(otherPiece: Piece) {
+        // Can be overriden by subclasses
     }
 }
