@@ -43,7 +43,16 @@ router.post('/state/action', (req, res) => {
     const gameId = req.body.gameId;
     const lastGotten = req.body.lastGotten;
     const game = Game.getGame(gameId);
-    game.gameState.executeAction(ActionTypes.actionTypes[req.body.actionType], ...req.body.actionArgs);
+    try {
+        game.gameState.executeAction(ActionTypes.actionTypes[req.body.actionType], ...req.body.actionArgs);
+    } catch (e: any) {
+        if (e instanceof TypeError) {
+            throw new Error(e.message + ", did you forget to add it using ActionTypes.addActionType(...)?");
+        } else {
+            throw e;
+        }
+    }
+    
     const actions = game.gameState.actionHistory.getSince(lastGotten);
     res.send({actions: actions.slice(0, actions.length - 1), timestamp: game.gameState.actionHistory.getLastTimestamp()});
 })

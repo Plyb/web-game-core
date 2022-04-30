@@ -3,6 +3,7 @@ import DrawPieceAction from "./DrawPieceAction";
 import MovePieceAction from "./MovePieceAction";
 import RedoAction from "./RedoAction";
 import RotatePieceAction from "./RotatePieceAction";
+import ShuffleAction from "./ShuffleAction";
 import UndoAction from "./UndoAction";
 
 
@@ -27,6 +28,7 @@ const defaultActionTypes = {
     RedoAction,
     MovePieceAction,
     DrawPieceAction,
+    ShuffleAction,
 }
 
 ActionTypes.addActionTypes(defaultActionTypes);

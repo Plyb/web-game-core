@@ -4,9 +4,11 @@ import { BoardId } from "../Board";
 import Piece, { Interaction, ShapeSpace } from "./Piece";
 import { Type } from "class-transformer";
 import { PieceTypes } from "./PieceTypes";
+import ShuffleAction from "../../../actions/ShuffleAction";
 
 export enum Interactions {
-    Draw = "Draw"
+    Draw = "Draw",
+    Shuffle = "Shuffle",
 }
 export default class DrawPile<PieceType extends Piece> extends Piece {
     @Type(() => Piece, {
@@ -27,6 +29,12 @@ export default class DrawPile<PieceType extends Piece> extends Piece {
                 action: (gameState) => {
                     gameState.executeAction(DrawPieceAction, boardId, this.id, interactingPlayer);
                     return Interactions.Draw;
+                }
+            }, {
+                label: 'Shuffle',
+                action: (gameState) => {
+                    gameState.executeAction(ShuffleAction, boardId, this.id);
+                    return Interactions.Shuffle;
                 }
             });
         }
