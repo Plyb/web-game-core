@@ -5,6 +5,7 @@ import ActionHistory from "./ActionHistory";
 import Board, { BoardId } from "./Board";
 import Piece, { PieceId } from "./pieces/Piece";
 import { TestPiece } from "./pieces/PieceTypes";
+import PlayingCard, { Suit } from "./pieces/PlayingCardPiece";
 import { Vec2 } from "./types";
 
 export type ParametersExceptFirst<F> = 
@@ -45,6 +46,7 @@ export default class BoardGameState {
         this._players = players.sort((a, b) => Math.random() - 0.5);
         this.hub.placePiece(new TestPiece(), 5, 5); // for testing
         this.hub.placePiece(new TestPiece(), 2, 2); // for testing
+        this.hub.placePiece(new PlayingCard(7, Suit.Clubs), 7, 2); // for testing
     }
 
     public toJSON(): string {

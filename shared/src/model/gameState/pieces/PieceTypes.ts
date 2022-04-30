@@ -1,6 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { PlayerId } from "../../player";
 import Piece, { Interaction, ShapeSpace } from "../pieces/Piece";
+import PlayingCard from "./PlayingCardPiece";
 
 
 export class TestPiece extends Piece {
@@ -46,6 +47,7 @@ export class PieceTypes {
 
 const defaultPieceTypes = {
     TestPiece,
+    PlayingCard,
 };
 
 PieceTypes.addPieceTypes(defaultPieceTypes);
