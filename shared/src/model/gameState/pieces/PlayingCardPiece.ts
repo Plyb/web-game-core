@@ -31,4 +31,17 @@ export default class PlayingCard extends Piece {
     public getDescription(): string {
         return "";
     }
+
+    static get52Cards(): PlayingCard[] {
+        const cards: PlayingCard[] = [];
+        for (const suit of Object.values(Suit)) {
+            if (suit === Suit.Joker) {
+                continue;
+            }
+            for (let number = 1; number <= 13; number++) {
+                cards.push(new PlayingCard(number, suit));
+            }
+        }
+        return cards;
+    }
 }
