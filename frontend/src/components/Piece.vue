@@ -2,8 +2,11 @@
 <div :class="['piece click-hit-box', {'click-through': clickThrough}]" 
     :style="[clipPathStyle, rotationStyle, heightStyle]"
     v-mouseup-outside="() => onMouseupOutside()"
+    v-touchend-outside="() => onMouseupOutside()"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
+    @touchstart="onMouseDown"
+    @touchend="onTouchEnd"
     @mouseleave="onMouseLeave"
     @click="onClick"
     ref="piece"
@@ -103,8 +106,20 @@ export default class PieceComponent extends mixins(PieceMixin, Vue.with(Props)) 
         this.pressing = false;
     }
 
-    public async onMouseUp(event: MouseEvent) {
+    public onMouseUp() {
         this.pressing = false;
+    }
+
+    public onTouchEnd(touchEvent: TouchEvent) {
+        const finalTouch = touchEvent.changedTouches[0];
+        if (finalTouch) {
+            const finalElement = document.elementFromPoint(finalTouch.clientX, finalTouch.clientY);
+            console.log(finalElement);
+            if (finalElement) {
+                finalElement.dispatchEvent(new MouseEvent("mouseup"));
+            }
+        }
+        this.onMouseUp();
     }
 
     public onClick() {

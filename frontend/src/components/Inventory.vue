@@ -9,7 +9,7 @@
     >
         <i :class="['fas', open ? 'fa-caret-down' : 'fa-caret-up']"></i>
     </div>
-    <div v-if="open" class="inventory" @mouseup="onMouseUp">
+    <div v-show="open" class="inventory" @mouseup="onMouseUp">
         <template  v-for="(piece, i) in pieces" :key="i">
             <BubbleMenu
                 :options="piece.getInventoryInteractions(playerId)"
@@ -143,7 +143,7 @@ export default class Inventory extends Vue.with(Props) {
 }
 
 .container-open {
-    height: 90vh;
+    height: 75vh;
 }
 
 .trigger {

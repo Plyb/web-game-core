@@ -1,5 +1,5 @@
 <template>
-<div @mousemove="moveDragPiece" class="game">
+<div @mousemove="moveDragPiece" @touchmove="onTouchMove" class="game">
     <div class="view-menu-holder floating-menu">
         <BubbleMenu
             :options="viewOptions"
@@ -70,6 +70,7 @@ export default class GamePage extends Vue {
         label: 'Overall'
     };
     public inventoryOpen = false;
+    private lastTouchOver: Element | null = null;
 
     public dragPiecePositionStyle = '';
 
@@ -101,7 +102,7 @@ export default class GamePage extends Vue {
         return this.gameState.getInventory();
     }
 
-    moveDragPiece(event: MouseEvent) {
+    moveDragPiece(event: { clientX: number, clientY: number }) {
         const draggingPiece = StateStore.state.draggingPiece;
         if (!draggingPiece) {
             return;
@@ -114,6 +115,25 @@ export default class GamePage extends Vue {
         this.dragPiecePositionStyle = `left: ${event.clientX}px;` +
             `top: ${event.clientY}px;` +
             `transform: translate(${pivotPercents.x * -6}em, ${pivotPercents.y * -6}em);`;
+    }
+
+    onTouchMove(event: TouchEvent) {
+        this.moveDragPiece(event.touches[0]);
+        const finalTouch = event.changedTouches[0];
+        if (finalTouch) {
+            const finalElement = document.elementFromPoint(finalTouch.clientX, finalTouch.clientY);
+            if (finalElement) {
+                if (this.lastTouchOver && finalElement !== this.lastTouchOver) {
+                    console.log('left', this.lastTouchOver);
+                    this.lastTouchOver.dispatchEvent(new MouseEvent('mouseleave'));
+                }
+                this.lastTouchOver = finalElement;
+                finalElement.dispatchEvent(new MouseEvent("mouseenter"));
+            }
+        }
+        if (StateStore.state.draggingPiece) {
+            event.preventDefault();
+        }
     }
 }
 </script>
@@ -143,8 +163,8 @@ export default class GamePage extends Vue {
 .drag-piece-container {
     position: fixed;
     z-index: 210;
-    height: 6em;
-    width: 6rem;
+    height: 5vh;
+    width: 5vh;
     pointer-events: none;
     opacity: 0.5;
 }
