@@ -7,7 +7,6 @@ import BoardGameStateProxy from './BoardGameStateProxy';
 import { ShapeSpace, Interaction } from '@plyb/web-game-core-shared/src/model/gameState/pieces/Piece';
 import Action from '@plyb/web-game-core-shared/src/actions/Action';
 import { Vec2 } from '@plyb/web-game-core-shared/src/model/gameState/types';
-axios.defaults.baseURL = window.location.protocol + '//' + window.location.hostname + ':3005';
 import Vue, { createApp, DefineComponent } from 'vue'
 import router from './router/index'
 import App from './App.vue'
