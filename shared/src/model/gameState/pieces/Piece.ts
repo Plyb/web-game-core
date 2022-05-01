@@ -1,3 +1,4 @@
+import { MoveLocation } from "../../../actions/MovePieceAction";
 import RotatePieceAction from "../../../actions/RotatePieceAction";
 import { PlayerId } from "../../player";
 import { newUUID } from "../../utils";
@@ -79,11 +80,15 @@ export default abstract class Piece {
         };
     }
 
-    public onOtherPlacedOn(otherPiece: Piece) {
-        // Can be overriden by subclasses
+    /**
+     * 
+     * @returns whether the piece should be placed
+     */
+    public onPlacedOnAction(otherPiece: Piece, from: MoveLocation, to: MoveLocation, gameState: BoardGameState): boolean {
+        return true;
     }
 
-    public onPlacedOnOther(otherPiece: Piece) {
-        // Can be overriden by subclasses
+    public onUndoPlacedOnAction(otherPiece: Piece, from: MoveLocation, to: MoveLocation, gameState: BoardGameState): void {
+        return;
     }
 }

@@ -1,5 +1,5 @@
 import { PlayerId } from "../player";
-import Piece from "./pieces/Piece";
+import Piece, { ShapeSpace } from "./pieces/Piece";
 import { PieceTypes } from "./pieces/PieceTypes";
 import { Vec2 } from "./types";
 
@@ -20,6 +20,16 @@ export default class Board {
         };
     }
 
+    public getIntersectionsAt(piece: Piece, x: number, y: number): PieceLocation[] {
+        return this.pieces.filter((existingPiece) => {
+            return piecesIntersect(existingPiece, { x, y, piece })
+        });
+    }
+
+    public getIntersectionsAtIndex(piece: Piece, index: number): PieceLocation[] {
+        return this.getIntersectionsAt(piece, index % this.size.x, Math.floor(index / this.size.x));
+    }
+
     public placePiece(piece: Piece, x: number, y: number): void {
         this.pieces.push({
             x,
@@ -29,11 +39,7 @@ export default class Board {
     }
 
     public placePieceCellIndex(piece: Piece, cellIndex: number): void {
-        this.pieces.push({
-            x: cellIndex % this.size.x,
-            y: Math.floor(cellIndex / this.size.x),
-            piece,
-        });
+        this.placePiece(piece, cellIndex % this.size.x, Math.floor(cellIndex / this.size.x));
     }
 
     public static copy(board: Board): Board {
@@ -43,4 +49,27 @@ export default class Board {
         });
         return newBoard;
     }
+}
+
+function getFilledSpaces(pieceLocation: PieceLocation): Vec2[] {
+    const filledSpaces: Vec2[] = [];
+    pieceLocation.piece.shape.forEach((row, y) => {
+        row.forEach((cell, x) => {
+            if (cell === ShapeSpace.Filled) {
+                filledSpaces.push({
+                    x: x + pieceLocation.x - pieceLocation.piece.pivot.x,
+                    y: y + pieceLocation.y - pieceLocation.piece.pivot.y,
+                });
+            }
+        });
+    })
+    return filledSpaces;
+}
+
+function piecesIntersect(a: PieceLocation, b: PieceLocation): boolean {
+    const aFilledSpaces = getFilledSpaces(a);
+    const bFilledSpaces = getFilledSpaces(b);
+    return bFilledSpaces.some((bSpace) => aFilledSpaces.some(aSpace => {
+        return aSpace.x === bSpace.x && aSpace.y === bSpace.y;
+    }));
 }

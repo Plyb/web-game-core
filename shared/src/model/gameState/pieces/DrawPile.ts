@@ -6,6 +6,8 @@ import { Type } from "class-transformer";
 import { PieceTypes } from "./PieceTypes";
 import ShuffleAction from "../../../actions/ShuffleAction";
 import FlipDrawPileAction from "../../../actions/FlipDrawPileAction";
+import { MoveLocation } from "../../../actions/MovePieceAction";
+import BoardGameState from "../BoardGameState";
 
 export enum Interactions {
     Draw = "Draw",
@@ -56,6 +58,27 @@ export default class DrawPile<PieceType extends Piece> extends Piece {
     public flip() {
         this.showTopPiece = !this.showTopPiece;
         this.pieces.reverse();
+    }
+
+    public merge(other: PieceType | DrawPile<PieceType>) {
+        if (other instanceof DrawPile) {
+            this.pieces.push(...other.pieces);
+        } else {
+            this.pieces.push(other);
+        }
+    }
+
+    public onPlacedOnAction(otherPiece: PieceType, from: MoveLocation, to: MoveLocation, gameState: BoardGameState): boolean {
+        this.merge(otherPiece);
+        return false;
+    }
+
+    public onUndoPlacedOnAction(otherPiece: Piece, from: MoveLocation, to: MoveLocation, gameState: BoardGameState) {
+        if (otherPiece instanceof DrawPile) {
+            this.pieces.splice(this.pieces.length - otherPiece.pieces.length, otherPiece.pieces.length);
+        } else {
+            this.pieces.pop();
+        }
     }
 
     public get shape() {

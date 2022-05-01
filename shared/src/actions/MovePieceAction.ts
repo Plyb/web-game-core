@@ -3,6 +3,7 @@ import { PlayerId } from "../model/player";
 import BoardGameState from "../model/gameState/BoardGameState";
 import Piece, { PieceId } from "../model/gameState/pieces/Piece";
 import Action from "./Action";
+import DrawPile from "../model/gameState/pieces/DrawPile";
 
 export enum ContainerType {
     Inventory,
@@ -14,6 +15,9 @@ export type MoveLocation = {
     containerType: ContainerType,
 };
 export default class MovePieceAction extends Action {
+    private intersectedPiece: PieceId | undefined;
+    private piece?: Piece;
+
     constructor(
         public readonly gameState: BoardGameState,
         public readonly pieceId: PieceId,
@@ -44,7 +48,7 @@ export default class MovePieceAction extends Action {
             }
     }
 
-    private addPiece(location: MoveLocation, piece: Piece) {
+    private addPiece(location: MoveLocation, piece: Piece, placeOnDrawPile = false) {
         switch (location.containerType) {
             case ContainerType.Inventory:
                 const inventory = this.gameState.inventories.get(location.containerId);
@@ -58,18 +62,47 @@ export default class MovePieceAction extends Action {
                 if (!board) {
                     throw new Error(`Could not find board ${location.containerId} while moving piece ${this.pieceId}`);
                 }
-                board.placePieceCellIndex(piece, location.index);
+                const intersectedPieces = board.getIntersectionsAtIndex(piece, location.index);
+                if (intersectedPieces.length > 0 && placeOnDrawPile) {
+                    for (const intersectedPiece of intersectedPieces) {
+                        if (!intersectedPiece.piece.onPlacedOnAction(piece, this.to, this.from, this.gameState)) {
+                            this.intersectedPiece = intersectedPiece.piece.id;
+                            return;
+                        }
+                    }
+                }
+                if (!this.intersectedPiece || !placeOnDrawPile) {
+                    board.placePieceCellIndex(piece, location.index);
+                }
                 break;
             }
     }
 
+    private removeFromDrawPile(): Piece {
+        const board = this.gameState.getBoard(this.to.containerId);
+        if (!board) {
+            throw new Error(`Could not find board ${this.to.containerId} while moving piece ${this.pieceId}`);
+        }
+        const intersectedPiece = board.pieces.find((pieceLocation) => pieceLocation.piece.id === this.intersectedPiece);
+        if (!intersectedPiece) {
+            throw new Error(`Could not find piece ${this.intersectedPiece} on board ${this.to.containerId}`);
+        }
+        if (!this.piece) {
+            throw new Error(`Could not find piece ${this.pieceId} on board ${this.to.containerId}`);
+        }
+        intersectedPiece.piece.onUndoPlacedOnAction(this.piece, this.from, this.to, this.gameState);
+        return this.piece
+    }
+
     public execute(): void {
-        const piece = this.removePiece(this.from);
-        this.addPiece(this.to, piece);
+        this.piece = this.removePiece(this.from);
+        this.addPiece(this.to, this.piece, true);
     }
 
     public undo(): void {
-        const piece = this.removePiece(this.to);
+        const piece = this.intersectedPiece
+            ? this.removeFromDrawPile()
+            : this.removePiece(this.to);
         this.addPiece(this.from, piece);
     }
 }
