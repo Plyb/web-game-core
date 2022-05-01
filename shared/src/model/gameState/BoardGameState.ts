@@ -36,7 +36,7 @@ export default class BoardGameState {
         return this._players;
     };
 
-    public constructor(hubSize: Vec2, players: Player[], matSize: Vec2) {
+    public constructor(players: Player[], hubSize: Vec2 = {x: 10, y: 10}, matSize: Vec2 = {x: 10, y: 10}) {
         this._hub = new Board(hubSize.x, hubSize.y, 'hub');
 
         players.forEach((player) => {
@@ -45,19 +45,6 @@ export default class BoardGameState {
         })
 
         this._players = players.sort((a, b) => Math.random() - 0.5);
-        this.hub.placePiece(new TestPiece(), 5, 5); // for testing
-        this.hub.placePiece(new TestPiece(), 2, 2); // for testing
-        this.hub.placePiece(new PlayingCard(7, Suit.Clubs), 7, 2); // for testing
-        this.hub.placePiece(new DrawPile<PlayingCard>([
-            new PlayingCard(1, Suit.Clubs),
-            new PlayingCard(2, Suit.Clubs),
-            new PlayingCard(3, Suit.Clubs),
-        ], true), 8, 7); // for testing
-        this.hub.placePiece(new DrawPile<PlayingCard>([
-            new PlayingCard(1, Suit.Clubs),
-            new PlayingCard(2, Suit.Clubs),
-            new PlayingCard(3, Suit.Clubs),
-        ]), 4, 7); // for testing
     }
 
     public toJSON(): string {

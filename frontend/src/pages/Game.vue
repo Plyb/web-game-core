@@ -74,7 +74,7 @@ export default class GamePage extends Vue {
     public dragPiecePositionStyle = '';
 
     public async created() {
-        StateStore.state = this.gameState;
+        StateStore.state = this.gameState; // Get the reactiveness here
         await this.gameState.setUpdateRate(1000);
     }
 

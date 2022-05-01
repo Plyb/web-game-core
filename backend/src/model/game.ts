@@ -1,5 +1,6 @@
 import { BoardGameState, Player } from '@plyb/web-game-core-shared';
 import { newUUID } from "@plyb/web-game-core-shared/src/model/utils";
+import { StateConstructor } from '..';
 
 export default class Game {
     public static games : {[key: string]: (Game | undefined)} = {};
@@ -48,13 +49,9 @@ export default class Game {
         return game;
     }
 
-    public start(): void {
+    public start(GameType: StateConstructor): void {
         this.started = true;
-        this._gameState = new BoardGameState(
-            {x: 10, y: 10},
-            Object.values(this.players),
-            {x: 8, y: 8},
-        );
+        this._gameState = GameType(Object.values(this.players));
     }
 
     public isStarted(): boolean {

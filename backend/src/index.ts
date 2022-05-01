@@ -1,11 +1,17 @@
 import express, { NextFunction, Request, Response, Router } from "express"
 import 'reflect-metadata';
 import bodyParser from "body-parser";
-import { GameController } from "./controllers/gameController";
+import { getGameController } from "./controllers/gameController";
 import { LobbyController } from "./controllers/lobbyController";
 import ActionTypes, { ActionConstructor } from "@plyb/web-game-core-shared/src/actions/ActionTypes";
+import { BoardGameState, Player } from "@plyb/web-game-core-shared";
 type ActionList = { [key: string]: ActionConstructor };
-export default (routes: Array<{path: string, router: Router}>, usingActions: ActionList = {}) => {
+export type StateConstructor = (players: Player[]) => BoardGameState;
+export default (
+    routes: Array<{path: string, router: Router}>,
+    usingActions: ActionList = {},
+    GameStateType: StateConstructor = (players) => new BoardGameState(players)
+) => {
     ActionTypes.addActionTypes(usingActions);
 
     const app = express();
@@ -20,7 +26,7 @@ export default (routes: Array<{path: string, router: Router}>, usingActions: Act
         next();
     })
 
-    app.use("/api/game", GameController.routes);
+    app.use("/api/game", getGameController(GameStateType));
     app.use("/api/lobby", LobbyController.routes);
     routes.forEach(route => {
         app.use(route.path, route.router);

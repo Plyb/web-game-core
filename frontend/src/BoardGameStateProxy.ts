@@ -17,7 +17,7 @@ export default class BoardGameStateProxy extends BoardGameState {
     public draggingPiece: DragPiece | null = null;
     private intervalId: number = -1;
     constructor() {
-        super({x: 0, y: 0}, [], {x: 0, y: 0});
+        super([]);
     }
 
     public async setUpdateRate(updateRate: number) {
