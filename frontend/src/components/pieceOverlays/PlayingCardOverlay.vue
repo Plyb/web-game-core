@@ -1,6 +1,6 @@
 <template>
 <div class="piece">
-    <h2 v-if="!isJoker">{{piece.number}}</h2>
+    <h2 v-if="!isJoker">{{numberDisplay}}</h2>
     <h2 :class="{'red-suit': isRedSuit}">{{icon}}</h2>
 </div>
 </template>
@@ -27,6 +27,20 @@ export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>()
 
     get isJoker() {
         return this.piece.suit === Suit.Joker;
+    }
+
+    get numberDisplay() {
+        if (this.piece.number === 1) {
+            return "A";
+        } else if (this.piece.number === 11) {
+            return "J";
+        } else if (this.piece.number === 12) {
+            return "Q";
+        } else if (this.piece.number === 13) {
+            return "K";
+        } else {
+            return this.piece.number.toString();
+        }
     }
 }
 </script>
