@@ -1,24 +1,68 @@
 {
   "name": "@plyb/web-game-core-frontend",
   "version": "1.0.2",
+  "private": true,
   "description": "frontend boilerplate code for webgames",
+  "author": {
+    "name": "Koby Lewis"
+  },
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
   "main": "src/index.ts",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Plyb/web-game-core.git"
-  },
-  "author": "Koby Lewis",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Plyb/web-game-core/issues"
-  },
-  "homepage": "https://github.com/Plyb/web-game-core#readme",
   "dependencies": {
     "@plyb/web-game-core-shared": "file:../shared",
     "@types/express": "^4.17.13",
     "axios": "^0.26.1",
     "class-transformer": "^0.5.1",
+    "core-js": "^3.8.3",
     "express": "^4.17.3",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "vue": "^3.2.33",
+    "vue-class-component": "^8.0.0-rc.1",
+    "vue-router": "^4.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-router": "^5.0.4",
+    "@vue/cli-service": "~5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "_id": "@plyb/web-game-core-frontend@1.0.2",
+  "bugs": {
+    "url": "https://github.com/Plyb/web-game-core/issues"
+  },
+  "homepage": "https://github.com/Plyb/web-game-core#readme",
+  "license": "ISC",
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Plyb/web-game-core.git"
   }
 }
