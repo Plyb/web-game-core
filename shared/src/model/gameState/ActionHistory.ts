@@ -71,4 +71,9 @@ export default class ActionHistory {
         }
         return null;
     }
+
+    clear() {
+        this.last = null;
+        this.first = null;
+    }
 }

@@ -5,7 +5,7 @@ import Action from "@plyb/web-game-core-shared/src/actions/Action";
 import { ActionConstructor, ParametersExceptFirst } from "@plyb/web-game-core-shared/src/model/gameState/BoardGameState";
 import { BoardId } from "@plyb/web-game-core-shared/src/model/gameState/Board";
 import { PieceTypes } from "@plyb/web-game-core-shared/src/model/gameState/pieces/PieceTypes";
-import { ActionDefinition } from "@plyb/web-game-core-shared/src/model/gameState/ActionHistory";
+import ActionHistory, { ActionDefinition } from "@plyb/web-game-core-shared/src/model/gameState/ActionHistory";
 import ActionTypes from "@plyb/web-game-core-shared/src/actions/ActionTypes";
 import { MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePieceAction";
 
@@ -33,6 +33,7 @@ export default class BoardGameStateProxy extends BoardGameState {
     public async load() {
         const response = await axios.get(`api/game/state/${Core.getGameId()}`);
         this.updateFromPlain(response.data);
+        this.actionHistory.clear();
     }
 
     public getInventory(): Piece[] {
@@ -41,12 +42,16 @@ export default class BoardGameStateProxy extends BoardGameState {
 
     public async executeAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
         const action = super.executeAction(actionType, ...args);
-        const response = await axios.post('api/game/state/action', {
-            gameId: Core.getGameId(),
-            actionType: actionType.name,
-            actionArgs: args,
-        })
-        this.applyActions(response.data.actions, response.data.timestamp);
+        try {
+            const response = await axios.post('api/game/state/action', {
+                gameId: Core.getGameId(),
+                actionType: actionType.name,
+                actionArgs: args,
+            })
+            this.applyActions(response.data.actions, response.data.timestamp);
+        } catch (e) {
+            await this.load();
+        }
         return action;
     }
 
