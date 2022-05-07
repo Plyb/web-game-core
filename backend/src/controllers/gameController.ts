@@ -41,18 +41,19 @@ export function getGameController(GameStateType: StateConstructor) {
         res.send({actions, timestamp: game.gameState.actionHistory.getLastTimestamp()});
     })
     
-    router.post('/state/action', (req, res) => {
+    router.post('/state/action', async (req, res, next) => {
         const gameId = req.body.gameId;
         const lastGotten = req.body.lastGotten;
         const game = Game.getGame(gameId);
         try {
-            game.gameState.executeAction(ActionTypes.actionTypes[req.body.actionType], ...req.body.actionArgs);
+            await game.gameState.executeAction(ActionTypes.actionTypes[req.body.actionType], ...req.body.actionArgs);
         } catch (e: any) {
             if (e instanceof TypeError) {
-                throw new Error(e.message + ", did you forget to add it using ActionTypes.addActionType(...)?");
+                next(new Error(e.message + ", did you forget to add it using ActionTypes.addActionType(...)?"));
             } else {
-                throw e;
+                next(e);
             }
+            return;
         }
         
         const actions = game.gameState.actionHistory.getSince(lastGotten);
