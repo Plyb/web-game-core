@@ -5,6 +5,8 @@ import Action from "./Action";
 import DrawPile from "../model/gameState/pieces/DrawPile";
 
 export default class DrawPieceAction extends Action {
+    public readonly name = "DrawPieceAction";
+
     constructor(
         public readonly gameState: BoardGameState,
         public readonly boardId: PlayerId,

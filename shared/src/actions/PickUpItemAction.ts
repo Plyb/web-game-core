@@ -5,6 +5,7 @@ import { PlayerId } from "../model/player";
 import Action from "./Action";
 
 export default class PickUpItemAction extends Action {
+    public readonly name = "PickUpItemAction";
     public readonly board: Board;
     public readonly pieceIndex: number;
     public readonly pieceLocation: PieceLocation;

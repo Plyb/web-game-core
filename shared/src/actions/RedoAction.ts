@@ -2,6 +2,7 @@ import BoardGameState from "../model/gameState/BoardGameState";
 import Action from "./Action";
 
 export default class RedoAction extends Action {
+    public readonly name = "RedoAction";
     // Note that this itself must be an undo action
     public readonly actionToRedo: Action;
 

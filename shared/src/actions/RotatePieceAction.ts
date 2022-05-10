@@ -5,6 +5,8 @@ import { PlayerId } from "../model/player";
 import Action from "./Action";
 
 export default class RotatePieceAction extends Action {
+    public readonly name = "RotatePieceAction";
+    
     constructor(
         public readonly gameState: BoardGameState,
         public readonly pieceId: string,

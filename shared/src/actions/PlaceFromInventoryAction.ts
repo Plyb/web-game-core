@@ -5,6 +5,7 @@ import { PlayerId } from "../model/player";
 import { Vec2 } from "../model/gameState/types";
 
 export default class PlaceFromInventoryAction extends Action {
+    public readonly name = "PlaceFromInventoryAction";
     public readonly pieceIndex: number;
 
     constructor(

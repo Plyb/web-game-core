@@ -15,6 +15,7 @@ export type MoveLocation = {
     containerType: ContainerType,
 };
 export default class MovePieceAction extends Action {
+    public readonly name = "MovePieceAction";
     private intersectedPiece: PieceId | undefined;
     private piece?: Piece;
 

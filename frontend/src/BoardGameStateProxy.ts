@@ -41,11 +41,11 @@ export default class BoardGameStateProxy extends BoardGameState {
     }
 
     public async executeAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
-        const action = super.executeAction(actionType, ...args);
+        const action = await super.executeAction(actionType, ...args);
         try {
             const response = await axios.post('api/game/state/action', {
                 gameId: Core.getGameId(),
-                actionType: actionType.name,
+                actionType: action.name,
                 actionArgs: args,
             })
             this.applyActions(response.data.actions, response.data.timestamp);

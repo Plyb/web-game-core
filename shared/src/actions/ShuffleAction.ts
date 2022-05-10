@@ -6,6 +6,7 @@ import Action from "./Action";
 
 type SortOrder = {[key: PieceId]: number}
 export default class ShuffleAction extends Action {
+    public readonly name = "ShuffleAction";
     private drawPile: DrawPile<Piece>;
     private preSortOrder: SortOrder;
     private postSortOrder?: SortOrder;

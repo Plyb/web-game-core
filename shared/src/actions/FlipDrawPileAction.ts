@@ -5,6 +5,7 @@ import { PlayerId } from "../model/player";
 import Action from "./Action";
 
 export default class ShuffleAction extends Action {
+    public readonly name = "ShuffleAction";
     private drawPile: DrawPile<Piece>;
 
     constructor(
