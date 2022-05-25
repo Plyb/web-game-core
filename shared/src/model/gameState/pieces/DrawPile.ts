@@ -37,7 +37,7 @@ export default class DrawPile<PieceType extends Piece> extends Piece {
             }, {
                 label: 'Shuffle',
                 action: (gameState) => {
-                    gameState.executeAction(ShuffleAction, boardId, this.id);
+                    gameState.executeAction(ShuffleAction, boardId, this.id, Date.now());
                     return Interactions.Shuffle;
                 }
             }, {

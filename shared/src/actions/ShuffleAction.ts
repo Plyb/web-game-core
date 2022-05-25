@@ -3,6 +3,7 @@ import BoardGameState from "../model/gameState/BoardGameState";
 import Piece, { PieceId } from "../model/gameState/pieces/Piece";
 import { PlayerId } from "../model/player";
 import Action from "./Action";
+import seedrandom from 'seedrandom';
 
 type SortOrder = {[key: PieceId]: number}
 export default class ShuffleAction extends Action {
@@ -15,6 +16,7 @@ export default class ShuffleAction extends Action {
         public readonly gameState: BoardGameState,
         public readonly boardId: PlayerId,
         public readonly drawPileId: PieceId,
+        public readonly seed: number
     ) {
         super(gameState);
 
@@ -46,7 +48,8 @@ export default class ShuffleAction extends Action {
         const pieces = drawPile.pieces;
         const postSortOrder = this.postSortOrder;
         if (postSortOrder === undefined) {
-            pieces.sort((a, b) => Math.random() - 0.5);
+            const generator = seedrandom(this.seed.toString());
+            pieces.sort((a, b) => generator() - 0.5);
             this.postSortOrder = this.getSortOrder();
             return;
         }
