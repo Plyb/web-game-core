@@ -50,6 +50,10 @@ export default class ActionHistory {
         return actions.reverse();
     }
 
+    getAllActions(): ActionDefinition[] {
+        return this.getSince(0);
+    }
+
     getLastTimestamp() {
         return this.last ? this.last.timestamp : 0;
     }

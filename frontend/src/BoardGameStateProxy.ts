@@ -32,8 +32,11 @@ export default class BoardGameStateProxy extends BoardGameState {
 
     public async load() {
         const response = await axios.get(`api/game/state/${Core.getGameId()}`);
-        this.updateFromPlain(response.data);
-        this.actionHistory.clear();
+        const originalGameState = JSON.parse(response.data.originalGameState);
+        const actions = response.data.actions;
+        const timestamp = response.data.timestamp;
+        this.updateFromPlain(originalGameState);
+        this.applyActions(actions, timestamp, true);
     }
 
     public getInventory(): Piece[] {

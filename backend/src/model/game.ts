@@ -12,6 +12,10 @@ export default class Game {
     public get gameState(): BoardGameState {
         return this._gameState;
     }
+    private _originalGameStateJson: string;
+    public get originalGameStateJson(): string {
+        return this._originalGameStateJson;
+    }
 
     private constructor() {
         this.id = newUUID(Game.name);
@@ -52,6 +56,7 @@ export default class Game {
     public start(GameType: StateConstructor): void {
         this.started = true;
         this._gameState = GameType(Object.values(this.players));
+        this._originalGameStateJson = this._gameState.toJSON();
     }
 
     public isStarted(): boolean {
