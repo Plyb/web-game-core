@@ -10,7 +10,7 @@ export type PieceLocation = Vec2 & {
 export type BoardId = PlayerId | 'hub';
 
 export default class Board {
-    public readonly pieces: PieceLocation[] = [];
+    public pieces: PieceLocation[] = [];
     public readonly size: Vec2;
 
     constructor(x: number, y: number, public readonly id: BoardId) {

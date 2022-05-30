@@ -6,7 +6,7 @@ import { Type } from "class-transformer";
 import { PieceTypes } from "./PieceTypes";
 import ShuffleAction from "../../../actions/ShuffleAction";
 import FlipDrawPileAction from "../../../actions/FlipDrawPileAction";
-import { MoveLocation } from "../../../actions/MovePieceAction";
+import { MoveLocation } from "../../../actions/MovePiecesAction";
 import BoardGameState from "../BoardGameState";
 
 export enum Interactions {

@@ -1,4 +1,4 @@
-import { MoveLocation } from "../../../actions/MovePieceAction";
+import { MoveLocation } from "../../../actions/MovePiecesAction";
 import RotatePieceAction from "../../../actions/RotatePieceAction";
 import { PlayerId } from "../../player";
 import { newUUID } from "../../utils";

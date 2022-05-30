@@ -23,7 +23,7 @@
 import PieceMixin from "../mixins/PieceMixin";
 import { Piece, ShapeSpace, Vec2 } from "../index";
 import StateStore from "../StateStore";
-import { MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePieceAction";
+import { MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 import { mixins, prop, Vue } from "vue-class-component";
 import PieceOverlays from "./pieceOverlays/PieceOverlays";
 

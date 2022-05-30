@@ -7,11 +7,13 @@
     >
         <i :class="['fas', open ? 'fa-caret-down' : 'fa-caret-up']"></i>
     </div>
-    <div v-show="open" class="inventory">
-        <template  v-for="(piece, i) in pieces" :key="i">
+    <div v-show="open" :class="['inventory', {placing}]">
+        <div v-if="placing" class="place-between" @click="placeAt(0)">+</div>
+        <template v-for="(piece, i) in pieces" :key="i">
             <BubbleMenu
                 :options="piece.getInventoryInteractions(playerId)"
                 @option-selected="onInteractionSelected($event, piece)"
+                rightClick="true"
             >
                 <Piece
                     :piece="piece"
@@ -23,6 +25,7 @@
                     @select="onPieceSelect(i)"
                 />
             </BubbleMenu>
+            <div v-if="placing" class="place-between" @click="placeAt(i + 1)">+</div>
         </template>
     </div>
 
@@ -42,7 +45,7 @@ import BubbleMenu from "./BubbleMenu.vue";
 import { Interactions } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
 import InspectPieceModal from "./InspectPieceModal.vue";
 import StateStore from "../StateStore";
-import MovePieceAction, { ContainerType } from "@plyb/web-game-core-shared/src/actions/MovePieceAction";
+import MovePiecesAction, { ContainerType } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 
 class Props {
     pieces: Piece[] = prop({
@@ -82,6 +85,27 @@ export default class Inventory extends Vue.with(Props) {
     close() {
         this.open = false;
         this.$emit('open-close', false);
+    }
+
+    get placing() {
+        return StateStore.state.selectedPieces.length > 0;
+    }
+
+    placeAt(pieceIndex: number) {
+        const fromPieces = StateStore.state.selectedPieces.map((selectedPiece) =>({
+            pieceId: selectedPiece.piece.id,
+            from: selectedPiece.from
+        }));
+        StateStore.state.executeAction(
+            MovePiecesAction,
+            {
+                containerId: this.playerId,
+                index: pieceIndex,
+                containerType: ContainerType.Inventory,
+            },
+            fromPieces,
+        );
+        StateStore.state.selectedPieces.splice(0);
     }
 }
 </script>
@@ -127,5 +151,21 @@ export default class Inventory extends Vue.with(Props) {
     box-sizing: border-box;
 
     overflow-y: auto;
+}
+
+.placing {
+    grid-gap: 0;
+    grid-template-columns: repeat(auto-fit, 2rem 5rem);
+}
+
+.place-between {
+    background-color: aqua;
+    border-radius: 1em;
+    height: 2em;
+    width: 2em;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    line-height: 2em;
 }
 </style>

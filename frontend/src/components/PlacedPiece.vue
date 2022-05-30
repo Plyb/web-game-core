@@ -35,7 +35,7 @@ import { mixins, Options, prop, Vue, WithDefault } from "vue-class-component";
 import BubbleMenu from "./BubbleMenu.vue";
 import Piece from "./Piece.vue";
 import InspectPieceModal from "./InspectPieceModal.vue";
-import { ContainerType, MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePieceAction";
+import { ContainerType, MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 
 class Props {
     model: PieceLocation = prop({

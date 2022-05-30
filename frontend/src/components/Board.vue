@@ -34,7 +34,7 @@
 <script lang="ts">
 import { Board } from "../index";
 import StateStore from "../StateStore";
-import MovePieceAction, { ContainerType } from "@plyb/web-game-core-shared/src/actions/MovePieceAction";
+import MovePiecesAction, { ContainerType } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 import { Options, prop, Vue } from "vue-class-component";
 import PlacedPiece from "./PlacedPiece.vue";
 import { Piece, PieceLocation } from "@plyb/web-game-core-shared";
@@ -79,18 +79,19 @@ export default class BoardComponent extends Vue.with(Props) {
     confirmPlacement() {
         if (this.pieceConfirmation) {
             const pieceConfirmation = this.pieceConfirmation;
-            StateStore.state.selectedPieces.forEach((selectedPiece) => {
-                StateStore.state.executeAction(
-                    MovePieceAction,
-                    selectedPiece.piece.id,
-                    selectedPiece.from,
-                    {
-                        containerId: this.model.id,
-                        index: pieceConfirmation.index,
-                        containerType: ContainerType.Board,
-                    },
-                );
-            })
+            const fromPieces = StateStore.state.selectedPieces.map((selectedPiece) =>({
+                pieceId: selectedPiece.piece.id,
+                from: selectedPiece.from
+            }));
+            StateStore.state.executeAction(
+                MovePiecesAction,
+                {
+                    containerId: this.model.id,
+                    index: pieceConfirmation.index,
+                    containerType: ContainerType.Board,
+                },
+                fromPieces
+            );
             StateStore.state.selectedPieces.splice(0);
             this.pieceConfirmation = null;
         }
