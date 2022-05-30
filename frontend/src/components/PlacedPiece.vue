@@ -1,16 +1,22 @@
 <template>
 <div class="holder" :style="[sizeStyle, positionStyle]">
 
-    <BubbleMenu class="trigger"
+    <BubbleMenu v-if="interactable" class="trigger"
         :options="piece.getBoardInteractions(boardId, playerId)"
         @click.stop
         @option-selected="onInteractionSelected"
+        rightClick="true"
     >
         <Piece
             :piece="model.piece"
             :location="moveLocation"
         />
     </BubbleMenu>
+    <Piece v-else
+        class="uninteractable"
+        :piece="model.piece"
+        :location="moveLocation"
+    />
 
     <InspectPieceModal v-if="interactionModalOpen"
         :piece="model.piece"
@@ -25,7 +31,7 @@ import PieceMixin from "../mixins/PieceMixin";
 import Core, { PieceLocation } from "../index";
 import { BoardId } from "@plyb/web-game-core-shared/src/model/gameState/Board";
 import { Interactions } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
-import { mixins, Options, prop, Vue } from "vue-class-component";
+import { mixins, Options, prop, Vue, WithDefault } from "vue-class-component";
 import BubbleMenu from "./BubbleMenu.vue";
 import Piece from "./Piece.vue";
 import InspectPieceModal from "./InspectPieceModal.vue";
@@ -43,6 +49,10 @@ class Props {
     boardId: BoardId = prop({
         required: true
     })
+
+    interactable: WithDefault<boolean> = prop({
+        default: true
+    });
 }
 
 @Options({
@@ -91,7 +101,6 @@ export default class PlacedPiece extends mixins(PieceMixin, Vue.with(Props)) {
 
 <style scoped>
 .holder {
-    pointer-events: none;
     position: absolute;
 }
 
@@ -105,5 +114,9 @@ export default class PlacedPiece extends mixins(PieceMixin, Vue.with(Props)) {
 
 .inspect-piece-modal {
     pointer-events: all;
+}
+
+.uninteractable {
+    pointer-events: none;
 }
 </style>

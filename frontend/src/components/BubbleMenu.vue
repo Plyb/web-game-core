@@ -1,6 +1,14 @@
 <template>
 <div v-click-outside="() => open = false">
-    <div class="trigger" @click="open = !open">
+    <div class="trigger" 
+        @click.left="onClick"
+        @click.right="onRightClick"
+        @touchstart="onMouseDown"
+        @mousedown="onMouseDown"
+        @mouseleave="onMouseLeave"
+        @mouseup="onMouseUp"
+        oncontextmenu="return false"
+    >
         <slot></slot>
     </div>
     <div class="menu" v-if="open">
@@ -23,14 +31,48 @@ class Props {
     options: MenuOption[] = prop({
         required: true
     })
+
+    rightClick: boolean = false
 }
 
 export default class BubbleMenu extends Vue.with(Props) {
     public open = false;
+    private pressing = false;
 
     public onClickOption(option: MenuOption) {
         this.$emit('option-selected', option.action(StateStore.state));
         this.open = false;
+    }
+
+    onClick() {
+        if (!this.rightClick) {
+            this.open = !this.open;
+        }
+    }
+
+    onRightClick() {
+        if (this.rightClick) {
+            this.open = !this.open;
+        }
+    }
+
+    onMouseDown() {
+        this.pressing = true;
+        const longPressLength = 500;
+        setTimeout(() => {
+            if (this.pressing) {
+                this.onRightClick();
+            }
+            this.pressing = false;
+        }, longPressLength);
+    }
+
+    onMouseLeave() {
+        this.pressing = false;
+    }
+
+    onMouseUp() {
+        this.pressing = false;
     }
 }
 </script>

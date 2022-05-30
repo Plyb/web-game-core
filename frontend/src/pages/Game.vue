@@ -1,5 +1,5 @@
 <template>
-<div @mousemove="moveDragPiece" @touchmove="onTouchMove" class="game">
+<div class="game">
     <div class="view-menu-holder floating-menu">
         <BubbleMenu
             :options="viewOptions"
@@ -24,15 +24,6 @@
     <BoardComponent v-else-if="view.type === ViewType.hub"
         :model="gameState.hub"
     />
-    <div v-if="StateStore.state.draggingPiece"
-        :style="dragPiecePositionStyle"
-        :class="['drag-piece-container', {'drag-piece-over-inventory': inventoryOpen}]"
-    >
-        <Piece
-            :piece="StateStore.state.draggingPiece.piece"
-            dragPiece="true"
-        />
-    </div>
 </div>
 </template>
 
@@ -48,6 +39,8 @@ import Inventory from "../components/Inventory.vue";
 import IconBar from "../components/IconBar.vue";
 import BoardGameStateProxy from "../BoardGameStateProxy";
 import StateStore from "../StateStore";
+
+type LabeledView = View & { label: string };
 
 @Options({
     components: {
@@ -65,21 +58,18 @@ export default class GamePage extends Vue {
     public readonly ViewType = ViewType;
     public readonly SelectMode = SelectMode;
     public readonly StateStore = StateStore;
-    public view: View = {
+    public view: LabeledView = {
         type: ViewType.overall,
         label: 'Overall'
     };
     public inventoryOpen = false;
-    private lastTouchOver: Element | null = null;
-
-    public dragPiecePositionStyle = '';
 
     public async created() {
         StateStore.state = this.gameState; // Get the reactiveness here
         await this.gameState.setUpdateRate(1000);
     }
 
-    public get availableViews(): View[] {
+    public get availableViews(): LabeledView[] {
         return [
             { type: ViewType.overall, label: 'Overall' },
             { type: ViewType.hub, label: 'Table Center' },
@@ -87,7 +77,7 @@ export default class GamePage extends Vue {
                 type: ViewType.player,
                 player: p,
                 label: p.username,
-            } as View))
+            } as LabeledView))
         ];
     }
 
@@ -100,40 +90,6 @@ export default class GamePage extends Vue {
 
     get pieces() {
         return this.gameState.getInventory();
-    }
-
-    moveDragPiece(event: { clientX: number, clientY: number }) {
-        const draggingPiece = StateStore.state.draggingPiece;
-        if (!draggingPiece) {
-            return;
-        }
-        const piece = draggingPiece.piece;
-        const pivotPercents = {
-            x: (piece.pivot.x + 0.5) / piece.shape.length,
-            y: (piece.pivot.y + 0.5) / piece.shape[0].length,
-        }
-        this.dragPiecePositionStyle = `left: ${event.clientX}px;` +
-            `top: ${event.clientY}px;` +
-            `transform: translate(${pivotPercents.x * -6}em, ${pivotPercents.y * -6}em);`;
-    }
-
-    onTouchMove(event: TouchEvent) {
-        this.moveDragPiece(event.touches[0]);
-        const finalTouch = event.changedTouches[0];
-        if (finalTouch) {
-            const finalElement = document.elementFromPoint(finalTouch.clientX, finalTouch.clientY);
-            if (finalElement) {
-                if (this.lastTouchOver && finalElement !== this.lastTouchOver) {
-                    console.log('left', this.lastTouchOver);
-                    this.lastTouchOver.dispatchEvent(new MouseEvent('mouseleave'));
-                }
-                this.lastTouchOver = finalElement;
-                finalElement.dispatchEvent(new MouseEvent("mouseenter"));
-            }
-        }
-        if (StateStore.state.draggingPiece) {
-            event.preventDefault();
-        }
     }
 }
 </script>

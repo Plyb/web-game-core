@@ -14,7 +14,7 @@ type DragPiece = {
     from: MoveLocation,
 }
 export default class BoardGameStateProxy extends BoardGameState {
-    public draggingPiece: DragPiece | null = null;
+    public selectedPieces: DragPiece[] = [];
     private intervalId: number = -1;
     constructor() {
         super([]);

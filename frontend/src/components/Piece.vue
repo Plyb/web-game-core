@@ -1,17 +1,12 @@
 <template>
-<div :class="['piece click-hit-box', {'click-through': clickThrough}]" 
+<div class="piece click-hit-box" 
     :style="[clipPathStyle, rotationStyle, heightStyle]"
-    v-mouseup-outside="() => onMouseupOutside()"
-    v-touchend-outside="() => onMouseupOutside()"
     @mousedown="onMouseDown"
-    @mouseup="onMouseUp"
     @touchstart="onMouseDown"
-    @touchend="onTouchEnd"
-    @mouseleave="onMouseLeave"
     @click="onClick"
     ref="piece"
 >
-    <template v-if="overlay && (!isBeingDragged || dragPiece)">
+    <template v-if="overlay">
         <component  :is="overlay" class="overlay"
             :style="clipPathStyle"
             :piece="piece"
@@ -19,7 +14,7 @@
     </template>
 
     <svg :viewBox="`0 0 ${size.x} ${size.y}`" class="overlay" preserveAspectRation="none">
-        <path fill="transparent" stroke="black" stroke-width="5" :d="svgBorderPath"></path>
+        <path fill="transparent" :stroke="isSelected ? 'green' : 'black'" stroke-width="5" :d="svgBorderPath"></path>
     </svg>
 </div>
 </template>
@@ -37,13 +32,13 @@ class Props {
         required: true
     })
 
-    location?: MoveLocation = undefined;
-
-    dragPiece: boolean = false;
+    location: MoveLocation = prop({
+        required: true
+    });
 }
 
 export default class PieceComponent extends mixins(PieceMixin, Vue.with(Props)) {
-    private pressing: boolean = false;
+    private mouseDownTime: number = 0;
     public size: Vec2 = {x: 0, y: 0};
     private resizeObserver!: ResizeObserver;
 
@@ -73,57 +68,19 @@ export default class PieceComponent extends mixins(PieceMixin, Vue.with(Props)) 
         return `grid-template-columns: repeat(${this.pieceSize.width}, 1fr);`
     }
 
-    get color() {
-        return 'green';
-    }
-
-    getCellColorStyle(cell: ShapeSpace) {
-        return cell === ShapeSpace.Filled ? `background-color: ${this.color};` : "";
-    }
-
     public onMouseDown() {
-        this.pressing = true;
-        const longPressLength = 500;
-        setTimeout(() => {
-            if (this.pressing) {
-                this.onLongPress();
-            }
-            this.pressing = false;
-        }, longPressLength);
-    }
-
-    public onLongPress() {
-        if (!this.location) {
-            return;
-        }
-        StateStore.state.draggingPiece = {
-            piece: this.piece,
-            from: this.location
-        };
-    }
-
-    public onMouseLeave() {
-        this.pressing = false;
-    }
-
-    public onMouseUp() {
-        this.pressing = false;
-    }
-
-    public onTouchEnd(touchEvent: TouchEvent) {
-        const finalTouch = touchEvent.changedTouches[0];
-        if (finalTouch) {
-            const finalElement = document.elementFromPoint(finalTouch.clientX, finalTouch.clientY);
-            console.log(finalElement);
-            if (finalElement) {
-                finalElement.dispatchEvent(new MouseEvent("mouseup"));
-            }
-        }
-        this.onMouseUp();
+        this.mouseDownTime = Date.now();
     }
 
     public onClick() {
-        this.$emit('select', this.piece);
+        const longPressLength = 500;
+        if (Date.now() - this.mouseDownTime < longPressLength){
+            if (this.isSelected) {
+                StateStore.state.selectedPieces.splice(this.selectedIndex, 1);
+            } else {
+                StateStore.state.selectedPieces.push({piece: this.piece, from: this.location});
+            }
+        }
     }
 
     public get rotationStyle() {
@@ -133,19 +90,14 @@ export default class PieceComponent extends mixins(PieceMixin, Vue.with(Props)) 
         return `transform: translate(${-xOffset}%, ${-yOffset}%) rotate(${-this.piece.rotation}deg) translate(${xOffset}%, ${yOffset}%)`
     }
 
-    get clickThrough() {
-        return StateStore.state.draggingPiece;
+    get selectedIndex() {
+        return StateStore.state.selectedPieces.findIndex(
+            (dragPiece) => dragPiece.piece === this.piece
+        );
     }
 
-    get isBeingDragged() {
-        return StateStore.state.draggingPiece && StateStore.state.draggingPiece.piece === this.piece;
-    }
-
-    async onMouseupOutside() {
-        if (StateStore.state.draggingPiece && StateStore.state.draggingPiece.piece === this.piece) {
-            await this.$nextTick();
-            StateStore.state.draggingPiece = null;
-        }
+    get isSelected() {
+        return this.selectedIndex !== -1;
     }
 
     get corners(): Vec2[] {

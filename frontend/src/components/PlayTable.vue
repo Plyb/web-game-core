@@ -118,7 +118,7 @@ export default class PlayTable extends Vue {
     }
 
     get selectMode() {
-        return StateStore.state.draggingPiece ? SelectMode.place : SelectMode.default;
+        return StateStore.state.selectedPieces.length ? SelectMode.place : SelectMode.default;
     }
 
     get gameState() {

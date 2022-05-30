@@ -9,6 +9,4 @@ export type View = (
         { type: ViewType.overall } 
         | { type: ViewType.player, player: Player }
         | { type: ViewType.hub }
-    ) & {
-    label: string;
-};
+    )

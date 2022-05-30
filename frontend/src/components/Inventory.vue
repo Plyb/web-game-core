@@ -1,22 +1,19 @@
 <template>
 <div v-click-outside="() => close()"
     :class="['container', {'container-open': open}]"
-    @mouseleave="onMouseLeave"
 >
     <div :class="['trigger', open ? 'trigger-open' : 'trigger-closed']"
         @click="open = !open"
-        @mouseenter="onMouseEnter"
     >
         <i :class="['fas', open ? 'fa-caret-down' : 'fa-caret-up']"></i>
     </div>
-    <div v-show="open" class="inventory" @mouseup="onMouseUp">
+    <div v-show="open" class="inventory">
         <template  v-for="(piece, i) in pieces" :key="i">
             <BubbleMenu
                 :options="piece.getInventoryInteractions(playerId)"
                 @option-selected="onInteractionSelected($event, piece)"
             >
                 <Piece
-                    :class="{'hovered': getIsHoveredOver(i)}"
                     :piece="piece"
                     :location="{
                         containerType: ContainerType.Inventory,
@@ -24,8 +21,6 @@
                         index: i,
                     }"
                     @select="onPieceSelect(i)"
-                    @mouseenter="onMouseEnterPiece(i)"
-                    @mouseleave="draggedOverPieceIndex = -1"
                 />
             </BubbleMenu>
         </template>
@@ -84,50 +79,9 @@ export default class Inventory extends Vue.with(Props) {
         }
     }
 
-    onMouseEnter() {
-        if (StateStore.state.draggingPiece) {
-            this.open = true;
-            this.$emit('open-close', true);
-        }
-    }
-
     close() {
         this.open = false;
         this.$emit('open-close', false);
-    }
-
-    onMouseLeave() {
-        if (StateStore.state.draggingPiece) {
-            this.close();
-        }
-    }
-
-    onMouseUp() {
-        if (StateStore.state.draggingPiece
-            && StateStore.state.draggingPiece.piece !== this.pieces[this.draggedOverPieceIndex]
-        ) {
-            const index = this.draggedOverPieceIndex > -1 ? this.draggedOverPieceIndex : this.pieces.length;
-            StateStore.state.executeAction(
-                MovePieceAction,
-                StateStore.state.draggingPiece.piece.id,
-                StateStore.state.draggingPiece.from,
-                {
-                    containerId: Core.getUserId() || '',
-                    index: index,
-                    containerType: ContainerType.Inventory
-                },
-            )
-        }
-    }
-
-    onMouseEnterPiece(index: number) {
-        if (StateStore.state.draggingPiece) {
-            this.draggedOverPieceIndex = index;
-        }
-    }
-
-    getIsHoveredOver(index: number) {
-        return this.draggedOverPieceIndex === index && StateStore.state.draggingPiece;
     }
 }
 </script>
@@ -173,9 +127,5 @@ export default class Inventory extends Vue.with(Props) {
     box-sizing: border-box;
 
     overflow-y: auto;
-}
-
-.hovered {
-    border: 2px solid #00FF00;
 }
 </style>
