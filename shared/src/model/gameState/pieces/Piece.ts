@@ -1,4 +1,4 @@
-import { MoveLocation } from "../../../actions/MovePiecesAction";
+import MovePiecesAction, { ContainerType, MoveLocation } from "../../../actions/MovePiecesAction";
 import RotatePieceAction from "../../../actions/RotatePieceAction";
 import { PlayerId } from "../../player";
 import { newUUID } from "../../utils";
@@ -15,6 +15,7 @@ export enum Interactions {
     RotateLeft = "RotateLeft",
     RotateRight = "RotateRight",
     Inspect = "Inspect",
+    PlaceOn = "PlaceOn",
 }
 
 export type PieceId = string;
@@ -28,6 +29,11 @@ const inspectInteraction = {
     action: (gameState: BoardGameState) => {
         return Interactions.Inspect;
     }
+}
+
+export type DragPiece = {
+    piece: Piece,
+    from: MoveLocation,
 }
 
 export default abstract class Piece {
@@ -56,8 +62,8 @@ export default abstract class Piece {
         ];
     }
 
-    public getBoardInteractions(boardId: BoardId, interactingPlayer: PlayerId): Interaction[] {
-        return [
+    public getBoardInteractions(boardId: BoardId, interactingPlayer: PlayerId, selectedPieces: DragPiece[]): Interaction[] {
+        const interactions: Interaction[] = [
             inspectInteraction,
             { label: 'Rotate left', action: (gameState) => {
                 gameState.executeAction(RotatePieceAction, this.id, boardId, 90, true);
@@ -67,7 +73,34 @@ export default abstract class Piece {
                 gameState.executeAction(RotatePieceAction, this.id, boardId, -90, true);
                 return Interactions.RotateRight;
             }},
-        ]
+        ];
+        
+        if (selectedPieces.length) {
+            interactions.push({
+                label: 'Place On', action: (gameState) => {
+                    const board = gameState.getBoard(boardId);
+                    if (!board) {
+                        throw new Error(`Board ${boardId} not found`);
+                    }
+                    const pieceLocation = board.pieces.find(p => p.piece.id === this.id);
+                    if (!pieceLocation) {
+                        throw new Error(`Piece ${this.id} not found on board ${boardId}`);
+                    }
+                    const to: MoveLocation = {
+                        containerId: boardId,
+                        containerType: ContainerType.Board,
+                        index: pieceLocation.x + pieceLocation.y * board.size.x,
+                    };
+                    gameState.executeAction(MovePiecesAction, to, selectedPieces.map(p => ({
+                        pieceId: p.piece.id,
+                        from: p.from,
+                    })));
+                    return Interactions.PlaceOn;
+                }
+            });
+        }
+
+        return interactions;
     }
 
     public getPivotPercents(): Vec2 {

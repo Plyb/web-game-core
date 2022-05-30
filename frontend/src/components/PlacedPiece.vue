@@ -2,7 +2,7 @@
 <div class="holder" :style="[sizeStyle, positionStyle]">
 
     <BubbleMenu v-if="interactable" class="trigger"
-        :options="piece.getBoardInteractions(boardId, playerId)"
+        :options="piece.getBoardInteractions(boardId, playerId, selectedPieces)"
         @click.stop
         @option-selected="onInteractionSelected"
         rightClick="true"
@@ -36,6 +36,7 @@ import BubbleMenu from "./BubbleMenu.vue";
 import Piece from "./Piece.vue";
 import InspectPieceModal from "./InspectPieceModal.vue";
 import { ContainerType, MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
+import StateStore from "../StateStore";
 
 class Props {
     model: PieceLocation = prop({
@@ -95,6 +96,10 @@ export default class PlacedPiece extends mixins(PieceMixin, Vue.with(Props)) {
 
     get playerId() {
         return Core.getUserId() || "";
+    }
+
+    get selectedPieces() {
+        return StateStore.state.selectedPieces;
     }
 }
 </script>

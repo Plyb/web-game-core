@@ -1,7 +1,7 @@
 import { PlayerId } from "../../player";
 import DrawPieceAction from "../../../actions/DrawPieceAction";
 import { BoardId } from "../Board";
-import Piece, { Interaction, ShapeSpace } from "./Piece";
+import Piece, { DragPiece, Interaction, ShapeSpace } from "./Piece";
 import { Type } from "class-transformer";
 import { PieceTypes } from "./PieceTypes";
 import ShuffleAction from "../../../actions/ShuffleAction";
@@ -25,8 +25,8 @@ export default class DrawPile<PieceType extends Piece> extends Piece {
         this.pieces = pieces;
     }
 
-    public getBoardInteractions(boardId: BoardId, interactingPlayer: PlayerId): Interaction[] {
-        const interactions =  super.getBoardInteractions(boardId, interactingPlayer);
+    public getBoardInteractions(boardId: BoardId, interactingPlayer: PlayerId, selectedPieces: DragPiece[]): Interaction[] {
+        const interactions =  super.getBoardInteractions(boardId, interactingPlayer, selectedPieces);
         if (this.pieces.length > 0) {
             interactions.push({
                 label: 'Draw',

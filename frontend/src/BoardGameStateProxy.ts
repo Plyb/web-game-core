@@ -8,11 +8,8 @@ import { PieceTypes } from "@plyb/web-game-core-shared/src/model/gameState/piece
 import { ActionDefinition } from "@plyb/web-game-core-shared/src/model/gameState/ActionHistory";
 import ActionTypes from "@plyb/web-game-core-shared/src/actions/ActionTypes";
 import { MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
+import { DragPiece } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
 
-type DragPiece = {
-    piece: Piece,
-    from: MoveLocation,
-}
 export default class BoardGameStateProxy extends BoardGameState {
     public selectedPieces: DragPiece[] = [];
     private intervalId: number = -1;
