@@ -1,54 +1,19 @@
-import { PlayerId } from "../../player";
-import DrawPieceAction from "../../../actions/DrawPieceAction";
-import { BoardId } from "../Board";
-import Piece, { DragPiece, Interaction, ShapeSpace } from "./Piece";
+import Piece, { ShapeSpace } from "./Piece";
 import { Type } from "class-transformer";
 import { PieceTypes } from "./PieceTypes";
-import ShuffleAction from "../../../actions/ShuffleAction";
-import FlipDrawPileAction from "../../../actions/FlipDrawPileAction";
 import { MoveLocation } from "../../../actions/MovePiecesAction";
 import BoardGameState from "../BoardGameState";
 
-export enum Interactions {
-    Draw = "Draw",
-    Shuffle = "Shuffle",
-    Flip = "Flip",
-}
+
 export default class DrawPile<PieceType extends Piece> extends Piece {
     @Type(() => Piece, {
         discriminator: PieceTypes.getClassTransformerDiscriminator(),
     })
     public readonly pieces: PieceType[];
     
-    constructor(pieces: PieceType[], private showTopPiece: boolean = false) {
-        super();
+    constructor(pieces: PieceType[], private showTopPiece: boolean = false, id?: string) {
+        super(id);
         this.pieces = pieces;
-    }
-
-    public getBoardInteractions(boardId: BoardId, interactingPlayer: PlayerId, selectedPieces: DragPiece[]): Interaction[] {
-        const interactions =  super.getBoardInteractions(boardId, interactingPlayer, selectedPieces);
-        if (this.pieces.length > 0) {
-            interactions.push({
-                label: 'Draw',
-                action: (gameState) => {
-                    gameState.executeAction(DrawPieceAction, boardId, this.id, interactingPlayer);
-                    return Interactions.Draw;
-                }
-            }, {
-                label: 'Shuffle',
-                action: (gameState) => {
-                    gameState.executeAction(ShuffleAction, boardId, this.id, Date.now());
-                    return Interactions.Shuffle;
-                }
-            }, {
-                label: 'Flip',
-                action: (gameState) => {
-                    gameState.executeAction(FlipDrawPileAction, boardId, this.id);
-                    return Interactions.Flip;
-                }
-            });
-        }
-        return interactions;
     }
 
     public shouldShowTopPiece(): boolean {
@@ -91,6 +56,11 @@ export default class DrawPile<PieceType extends Piece> extends Piece {
             ]
         }
     }
+
+    get rawPieces(): Piece[] {
+        return this.pieces;
+    }
+
     public readonly pivot = {
         x: 0,
         y: 0,

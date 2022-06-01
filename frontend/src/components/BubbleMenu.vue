@@ -21,8 +21,8 @@
 </template>
 
 <script lang="ts">
+import { Interaction } from "../pieceInteractions";
 import { Vue, prop } from "vue-class-component";
-import { Interaction } from "../index"
 import StateStore from "../StateStore";
 
 export type MenuOption = Interaction;

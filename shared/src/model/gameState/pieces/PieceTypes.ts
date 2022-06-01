@@ -1,6 +1,5 @@
 import { plainToInstance } from "class-transformer";
-import { PlayerId } from "../../player";
-import Piece, { Interaction, ShapeSpace } from "../pieces/Piece";
+import Piece, { ShapeSpace } from "../pieces/Piece";
 
 
 export class TestPiece extends Piece {
@@ -11,10 +10,6 @@ export class TestPiece extends Piece {
     ];
 
     public readonly pivot = { x: 0, y: 2 };
-
-    public getInventoryInteractions(inventoryId: PlayerId): Interaction[] {
-        return super.getInventoryInteractions(inventoryId);
-    }
 
     public getName(): string {
         return "Test Piece";

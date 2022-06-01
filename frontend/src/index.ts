@@ -4,7 +4,7 @@ import '@plyb/web-game-core-shared/src/model/gameState/pieces/defaultPieceTypes'
 import Lobby from './lobby';
 import { Board, Piece, PieceLocation, Player } from '@plyb/web-game-core-shared';
 import BoardGameStateProxy from './BoardGameStateProxy';
-import { ShapeSpace, Interaction } from '@plyb/web-game-core-shared/src/model/gameState/pieces/Piece';
+import { ShapeSpace } from '@plyb/web-game-core-shared/src/model/gameState/pieces/Piece';
 import Action from '@plyb/web-game-core-shared/src/actions/Action';
 import { Vec2 } from '@plyb/web-game-core-shared/src/model/gameState/types';
 import Vue, { createApp, DefineComponent } from 'vue'
@@ -116,7 +116,6 @@ export {
 	Lobby,
 	Action,
 	Vec2,
-	Interaction,
 };
 
 export default {

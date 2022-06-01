@@ -2,7 +2,7 @@
 <div class="holder" :style="[sizeStyle, positionStyle]">
 
     <BubbleMenu v-if="interactable" class="trigger"
-        :options="piece.getBoardInteractions(boardId, playerId, selectedPieces)"
+        :options="interactions"
         @click.stop
         @option-selected="onInteractionSelected"
         rightClick="true"
@@ -30,13 +30,13 @@
 import PieceMixin from "../mixins/PieceMixin";
 import Core, { PieceLocation } from "../index";
 import { BoardId } from "@plyb/web-game-core-shared/src/model/gameState/Board";
-import { Interactions } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
 import { mixins, Options, prop, Vue, WithDefault } from "vue-class-component";
 import BubbleMenu from "./BubbleMenu.vue";
-import Piece from "./Piece.vue";
+import PieceComponent from "./Piece.vue";
 import InspectPieceModal from "./InspectPieceModal.vue";
 import { ContainerType, MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 import StateStore from "../StateStore";
+import { getBoardInteractions, Interactions } from "../pieceInteractions";
 
 class Props {
     model: PieceLocation = prop({
@@ -58,7 +58,7 @@ class Props {
 
 @Options({
     components: {
-        Piece,
+        Piece: PieceComponent,
         BubbleMenu,
         InspectPieceModal,
     },
@@ -84,6 +84,10 @@ export default class PlacedPiece extends mixins(PieceMixin, Vue.with(Props)) {
         if (interaction === Interactions.Inspect) {
             this.interactionModalOpen = true;
         }
+    }
+
+    get interactions() {
+        return getBoardInteractions(this.piece, this.boardId, this.playerId, this.selectedPieces);
     }
 
     get moveLocation(): MoveLocation {

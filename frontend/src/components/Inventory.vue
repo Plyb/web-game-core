@@ -11,7 +11,7 @@
         <div v-if="placing" class="place-between" @click="placeAt(0)">+</div>
         <template v-for="(piece, i) in pieces" :key="i">
             <BubbleMenu
-                :options="piece.getInventoryInteractions(playerId)"
+                :options="getInventoryInteractions(piece)"
                 @option-selected="onInteractionSelected($event, piece)"
                 rightClick="true"
             >
@@ -42,10 +42,10 @@ import Core, { Piece } from "../index";
 import { Options, prop, Vue } from "vue-class-component";
 import PieceComponent from "./Piece.vue";
 import BubbleMenu from "./BubbleMenu.vue";
-import { Interactions } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
 import InspectPieceModal from "./InspectPieceModal.vue";
 import StateStore from "../StateStore";
 import MovePiecesAction, { ContainerType } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
+import { getInventoryInteractions, Interactions } from "../pieceInteractions";
 
 class Props {
     pieces: Piece[] = prop({
@@ -106,6 +106,10 @@ export default class Inventory extends Vue.with(Props) {
             fromPieces,
         );
         StateStore.state.selectedPieces.splice(0);
+    }
+
+    getInventoryInteractions(piece: Piece) {
+        return getInventoryInteractions(piece, this.playerId);
     }
 }
 </script>
