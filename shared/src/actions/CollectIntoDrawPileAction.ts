@@ -1,12 +1,13 @@
 import DrawPile from "../model/gameState/pieces/DrawPile";
 import Board, { BoardId, PieceLocation } from "../model/gameState/Board";
-import { PieceId } from "../model/gameState/pieces/Piece";
+import Piece, { PieceId } from "../model/gameState/pieces/Piece";
 import BoardGameState from "../model/gameState/BoardGameState";
 import Action from "./Action"
 
 export default class CollectIntoDrawPileAction extends Action {
     public readonly name = "CollectIntoDrawPileAction";
     private intersectedPieceLocations: PieceLocation[] = [];
+    private collectedDrawPile?: Piece;
 
     constructor(
         public readonly gameState: BoardGameState,
@@ -42,9 +43,14 @@ export default class CollectIntoDrawPileAction extends Action {
         });
         const drawPile = new DrawPile([...pieces], true, pieceLocation.piece.id);
         board.placePiece(drawPile, pieceLocation.x, pieceLocation.y);
+        this.collectedDrawPile = drawPile;
     }
 
     public undo(): void {
-        // TODO implement undo
+        const board = this.getBoard(this.boardId);
+        board.pieces.splice(board.pieces.findIndex((pieceLocation) => pieceLocation.piece === this.collectedDrawPile), 1);
+        this.intersectedPieceLocations.forEach((pieceLocation) => {
+            board.placePiece(pieceLocation.piece, pieceLocation.x, pieceLocation.y);
+        });
     }
 }
