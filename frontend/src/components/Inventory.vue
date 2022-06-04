@@ -122,16 +122,19 @@ export default class Inventory extends Vue.with(Props) {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    pointer-events: none;
 }
 
 .container-open {
     height: 75vh;
+    pointer-events: all;
 }
 
 .trigger {
     cursor: pointer;
     padding: 0.5rem 2rem 0.5rem 2rem;
     border-radius: 0.5rem 0.5rem 0 0;
+    pointer-events: all;
 }
 
 .trigger-open {

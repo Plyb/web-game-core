@@ -24,6 +24,8 @@
     <BoardComponent v-else-if="view.type === ViewType.hub"
         :model="gameState.hub"
     />
+
+    <AlertBanners/>
 </div>
 </template>
 
@@ -39,6 +41,7 @@ import Inventory from "../components/Inventory.vue";
 import IconBar from "../components/IconBar.vue";
 import BoardGameStateProxy from "../BoardGameStateProxy";
 import StateStore from "../StateStore";
+import AlertBanners from "../components/AlertBanners.vue";
 
 type LabeledView = View & { label: string };
 
@@ -51,6 +54,7 @@ type LabeledView = View & { label: string };
         Inventory,
         Piece: PieceComponent,
         IconBar,
+        AlertBanners,
     }
 })
 export default class GamePage extends Vue {
