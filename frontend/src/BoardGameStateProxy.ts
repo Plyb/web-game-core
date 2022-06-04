@@ -9,6 +9,7 @@ import { ActionDefinition } from "@plyb/web-game-core-shared/src/model/gameState
 import ActionTypes from "@plyb/web-game-core-shared/src/actions/ActionTypes";
 import { MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 import { DragPiece } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
+import AlertCore from "./AlertCore";
 
 export default class BoardGameStateProxy extends BoardGameState {
     public selectedPieces: DragPiece[] = [];
@@ -50,6 +51,7 @@ export default class BoardGameStateProxy extends BoardGameState {
             })
             this.applyActions(response.data.actions, response.data.timestamp);
         } catch (e) {
+            AlertCore.warning('Reloading game state...', 3000);
             await this.load();
         }
         return action;
@@ -60,6 +62,7 @@ export default class BoardGameStateProxy extends BoardGameState {
             const response = await axios.get(`api/game/state/actions/${Core.getGameId()}/${this.lastActionGottenTimestamp}`);
             this.applyActions(response.data.actions, response.data.timestamp, true);
         } catch (e: any) {
+            AlertCore.warning('Reloading game state...', 3000);
             await this.load();
         }
     }
