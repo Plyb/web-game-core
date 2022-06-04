@@ -23,10 +23,6 @@ export default class AlertBanners extends Vue {
     public readonly banners: Banner[] = [];
     created() {
         setBanners(this.banners);
-        AlertCore.error('this is an error');
-        AlertCore.warning('this is a warning');
-        AlertCore.info('this is an info');
-        AlertCore.success('this is a success');
     }
 
     public close(index: number) {
