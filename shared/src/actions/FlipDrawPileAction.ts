@@ -4,8 +4,8 @@ import Piece, { PieceId } from "../model/gameState/pieces/Piece";
 import { PlayerId } from "../model/player";
 import Action from "./Action";
 
-export default class ShuffleAction extends Action {
-    public readonly name = "ShuffleAction";
+export default class FlipDrawPileAction extends Action {
+    public readonly name = "FlipDrawPileAction";
     private drawPile: DrawPile<Piece>;
 
     constructor(
