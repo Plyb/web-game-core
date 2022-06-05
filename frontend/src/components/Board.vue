@@ -17,7 +17,7 @@
         :boardId="model.id"
     />
 
-    <PlacedPiece v-if="pieceConfirmation" 
+    <PlacedPiece v-if="showPlaceConfirmation" 
         @click.stop="confirmPlacement"
         class="confirmation-piece"
         :model="confirmationPieceLocation"
@@ -56,7 +56,7 @@ type PieceIndex = {
     }
 })
 export default class BoardComponent extends Vue.with(Props) {
-    pieceConfirmation: PieceIndex | null = null;
+    pieceConfirmation: number | null = null;
 
     get gridStyle() {
         return `grid-template-columns: repeat(${this.model.size.x}, 1fr);` +
@@ -69,16 +69,12 @@ export default class BoardComponent extends Vue.with(Props) {
 
     onCellSelect(index: number) {
         if (StateStore.state.selectedPieces.length > 0) {
-            this.pieceConfirmation = {
-                piece: StateStore.state.selectedPieces[0].piece,
-                index
-            };
+            this.pieceConfirmation = index;
         }
     }
 
     confirmPlacement() {
         if (this.pieceConfirmation) {
-            const pieceConfirmation = this.pieceConfirmation;
             const fromPieces = StateStore.state.selectedPieces.map((selectedPiece) =>({
                 pieceId: selectedPiece.piece.id,
                 from: selectedPiece.from
@@ -87,7 +83,7 @@ export default class BoardComponent extends Vue.with(Props) {
                 MovePiecesAction,
                 {
                     containerId: this.model.id,
-                    index: pieceConfirmation.index,
+                    index: this.pieceConfirmation,
                     containerType: ContainerType.Board,
                 },
                 fromPieces
@@ -100,11 +96,15 @@ export default class BoardComponent extends Vue.with(Props) {
     get confirmationPieceLocation() {
         if (this.pieceConfirmation) {
             return {
-                piece: this.pieceConfirmation.piece,
-                x: this.pieceConfirmation.index % this.model.size.x,
-                y: Math.floor(this.pieceConfirmation.index / this.model.size.x),
+                piece: StateStore.state.selectedPieces[StateStore.state.selectedPieces.length - 1].piece,
+                x: this.pieceConfirmation % this.model.size.x,
+                y: Math.floor(this.pieceConfirmation / this.model.size.x),
             };
         }
+    }
+
+    get showPlaceConfirmation() {
+        return this.pieceConfirmation && StateStore.state.selectedPieces.length;
     }
 }
 </script>

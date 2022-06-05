@@ -83,6 +83,8 @@ export default class PlacedPiece extends mixins(PieceMixin, Vue.with(Props)) {
     onInteractionSelected(interaction: string) {
         if (interaction === Interactions.Inspect) {
             this.interactionModalOpen = true;
+        } else if (interaction === Interactions.PlaceOn) {
+            StateStore.state.selectedPieces.splice(0)
         }
     }
 
