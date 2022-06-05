@@ -64,7 +64,7 @@ export function setUpVueApp(customApp?: DefineComponent) {
 			[key: string]: (event: MouseEvent) => void
 		}
 	}
-	function createMouseOutsideDirective(eventType: 'mouseup' | 'click' | 'touchend') {
+	function createMouseOutsideDirective(eventType: 'mouseup' | 'click' | 'touchend' | 'contextmenu') {
 		return {
 			beforeMount: function (el: TaggedElement, binding: Vue.DirectiveBinding) {
 				function clickOutsideEvent(event: MouseEvent | TouchEvent) {
@@ -101,6 +101,7 @@ export function setUpVueApp(customApp?: DefineComponent) {
 	app.directive('mouseup-outside', createMouseOutsideDirective('mouseup'));
 	app.directive('touchend-outside', createMouseOutsideDirective('touchend'));
 	app.directive('click-outside', createMouseOutsideDirective('click'));
+	app.directive('right-click-outside', createMouseOutsideDirective('contextmenu'));
 	app.use(router);
 	app.mount('#app');
 

@@ -1,5 +1,7 @@
 <template>
-<div v-click-outside="() => open = false">
+<div v-click-outside="() => open = false"
+    v-right-click-outside="() => open = false"
+>
     <div class="trigger" 
         @click.left="onClick"
         @click.right="onRightClick"
