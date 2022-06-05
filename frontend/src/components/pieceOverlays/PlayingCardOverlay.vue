@@ -1,14 +1,21 @@
 <template>
 <div class="piece">
-    <fit-text v-if="!isJoker">{{numberDisplay}}</fit-text>
-    <fit-text :class="{'red-suit': isRedSuit}">{{icon}}</fit-text>
+    <FitText v-if="!isJoker">{{numberDisplay}}</FitText>
+    <FitText :class="{'red-suit': isRedSuit}">{{icon}}</FitText>
 </div>
 </template>
 
 <script lang="ts">
 import PieceOverlay from "./PieceOverlay.mixin";
 import PlayingCardPiece, { Suit } from "@plyb/web-game-core-shared/src/model/gameState/pieces/PlayingCardPiece";
+import { Options } from "vue-class-component";
+import FitText from "../FitText.vue";
 
+@Options({
+    components: {
+        FitText,
+    }
+})
 export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>() {
     get icon() {
         const suitToIcon = {
