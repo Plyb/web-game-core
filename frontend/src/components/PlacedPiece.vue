@@ -6,6 +6,7 @@
         @click.stop
         @option-selected="onInteractionSelected"
         rightClick="true"
+        :closeOnClick="false"
     >
         <Piece
             :piece="model.piece"

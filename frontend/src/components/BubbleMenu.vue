@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { Interaction } from "../pieceInteractions";
-import { Vue, prop } from "vue-class-component";
+import { Vue, prop, WithDefault } from "vue-class-component";
 import StateStore from "../StateStore";
 
 export type MenuOption = Interaction;
@@ -35,6 +35,10 @@ class Props {
     })
 
     rightClick: boolean = false
+
+    closeOnClick: WithDefault<boolean> = prop({
+        default: true
+    })
 }
 
 export default class BubbleMenu extends Vue.with(Props) {
@@ -43,7 +47,9 @@ export default class BubbleMenu extends Vue.with(Props) {
 
     public onClickOption(option: MenuOption) {
         this.$emit('option-selected', option.action(StateStore.state));
-        this.open = false;
+        if (this.closeOnClick) {
+            this.open = false;
+        }
     }
 
     onClick() {
