@@ -1,5 +1,6 @@
 import UndoAction from "../../actions/UndoAction";
 import Action from "../../actions/Action";
+import RedoAction from "../../actions/RedoAction";
 
 class ActionNode {
     public readonly timestamp = Date.now();
@@ -62,13 +63,19 @@ export default class ActionHistory {
         let previousUndos = 0;
         let currentAction = this.last;
         while (currentAction !== null) {
-            if ((currentAction.action.constructor === UndoAction) != redo) {
+            if (currentAction.action.constructor === UndoAction) {
+                if (redo && previousUndos >= 0) {
+                    return currentAction.action;
+                }
                 previousUndos++;
             } else {
-                if (previousUndos === 0) {
+                if (!redo && previousUndos === 0) {
                     return currentAction.action;
                 } else {
                     previousUndos--;
+                    if (redo && currentAction.action.constructor !== RedoAction) {
+                        return null;
+                    }
                 }
             }
             currentAction = currentAction.prev;
