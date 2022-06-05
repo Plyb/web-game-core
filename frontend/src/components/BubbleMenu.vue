@@ -6,6 +6,7 @@
         @click.left="onClick"
         @click.right="onRightClick"
         @touchstart="onMouseDown"
+        @touchmove="pressing = false"
         @mousedown="onMouseDown"
         @mouseleave="onMouseLeave"
         @mouseup="onMouseUp"
@@ -43,7 +44,7 @@ class Props {
 
 export default class BubbleMenu extends Vue.with(Props) {
     public open = false;
-    private pressing = false;
+    public pressing = false;
 
     public onClickOption(option: MenuOption) {
         this.$emit('option-selected', option.action(StateStore.state));
