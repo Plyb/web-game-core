@@ -14,11 +14,13 @@ import AlertCore from "./AlertCore";
 export default class BoardGameStateProxy extends BoardGameState {
     public selectedPieces: DragPiece[] = [];
     private intervalId: number = -1;
+    private updateRate: number = 1000;
     constructor() {
         super([]);
     }
 
     public async setUpdateRate(updateRate: number) {
+        this.updateRate = updateRate;
         clearInterval(this.intervalId);
         const result = await this.load();
         this.intervalId = window.setInterval(
@@ -42,18 +44,27 @@ export default class BoardGameStateProxy extends BoardGameState {
     }
 
     public async executeAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
+        clearInterval(this.intervalId);
+        const lastGotten = this.actionHistory.getLastTimestamp();
         const action = await super.executeAction(actionType, ...args);
         try {
             const response = await axios.post('api/game/state/action', {
                 gameId: Core.getGameId(),
                 actionType: action.name,
                 actionArgs: args,
-            })
-            this.applyActions(response.data.actions, response.data.timestamp);
+                lastGotten
+            });
+            // remove our local version and use the server's
+            this.actionHistory.removeLast();
+            this.applyActions(response.data.actions, response.data.timestamp, true);
         } catch (e) {
             AlertCore.warning('Reloading game state...', 3000);
             await this.load();
         }
+        this.intervalId = window.setInterval(
+            () => this.update(),
+            this.updateRate
+        );
         return action;
     }
 

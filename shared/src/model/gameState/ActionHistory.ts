@@ -80,4 +80,17 @@ export default class ActionHistory {
         this.last = null;
         this.first = null;
     }
+
+    removeLast() {
+        if (this.last) {
+            this.last.action.undo();
+            if (this.last.prev) {
+                this.last.prev.next = null;
+            }
+            this.last = this.last.prev;
+            if (!this.last) {
+                this.first = null;
+            }
+        }
+    }
 }

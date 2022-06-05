@@ -61,7 +61,7 @@ export function getGameController(GameStateType: StateConstructor) {
         }
         
         const actions = game.gameState.actionHistory.getSince(lastGotten);
-        res.send({actions: actions.slice(0, actions.length - 1), timestamp: game.gameState.actionHistory.getLastTimestamp()});
+        res.send({actions: actions, timestamp: game.gameState.actionHistory.getLastTimestamp()});
     })
 
     return router;
