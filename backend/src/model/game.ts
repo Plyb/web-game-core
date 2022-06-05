@@ -46,7 +46,7 @@ export default class Game {
     }
 
     public static getGame(gameId: string): Game {
-        const game = this.games[gameId];
+        const game = this.games[gameId.toLowerCase()];
         if (!game) {
             throw new Error("Game does not exist");
         }

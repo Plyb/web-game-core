@@ -4,7 +4,7 @@
     <button @click="goHome">Go Back</button>
 </div>
 <div v-else>
-    <p>Game code: {{gameId}}</p>
+    <p>Game code: {{capitalGameId}}</p>
     <p>Players:</p>
     <div v-for="playerName in model.getPlayerNames()" :key="playerName"
         class="player"
@@ -62,6 +62,10 @@ export default class Lobby extends Vue implements LobbyListener {
 
     get isKicked(): boolean {
         return !this.playerNames.includes(this.username) && this.model.isLoaded();
+    }
+
+    get capitalGameId() {
+        return this.gameId.toUpperCase();
     }
 }
 

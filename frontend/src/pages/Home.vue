@@ -26,7 +26,7 @@ import { Vue, Options } from 'vue-class-component';
 
 @Options({})
 export default class Home extends Vue {
-  gameId: string = Core.getGameId() || '';
+  gameId: string = Core.getGameId()?.toUpperCase() || '';
   username: string = Core.getUsername() || '';
   serverErrorMessage: string = '';
 
