@@ -1,7 +1,7 @@
 <template>
 <div class="piece">
-    <h2 v-if="!isJoker">{{numberDisplay}}</h2>
-    <h2 :class="{'red-suit': isRedSuit}">{{icon}}</h2>
+    <fit-text v-if="!isJoker">{{numberDisplay}}</fit-text>
+    <fit-text :class="{'red-suit': isRedSuit}">{{icon}}</fit-text>
 </div>
 </template>
 
