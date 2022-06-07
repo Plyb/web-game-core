@@ -24,7 +24,7 @@ export default class BoardGameStateProxy extends BoardGameState {
         clearInterval(this.intervalId);
         const result = await this.load();
         this.intervalId = window.setInterval(
-            () => this.update(),
+            () => {},
             updateRate
         );
         return result;
@@ -43,30 +43,61 @@ export default class BoardGameStateProxy extends BoardGameState {
         return this._inventories.get(Core.getUserId() || "") || [];
     }
 
-    public async executeAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
+    public async executeAndSendAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
         clearInterval(this.intervalId);
-        const lastGotten = this.actionHistory.getLastTimestamp();
-        const action = await super.executeAction(actionType, ...args);
+        const action = new actionType(this, ...args);
+        action.execute();
+        const parent = this.actionHistory.getLast();
+        this.actionHistory.add(action, args);
         try {
             const response = await axios.post('api/game/state/action', {
                 gameId: Core.getGameId(),
                 actionType: action.name,
                 actionArgs: args,
-                lastGotten
+                id: action.id,
+                parentId: parent?.action.id
             });
-            // remove our local version and use the server's
-            this.actionHistory.removeLast();
-            this.applyActions(response.data.actions, response.data.timestamp, true);
+            const ancestors: ActionDefinition[] = response.data.actions;
+            if (ancestors.length) {
+                action.undo();
+                this.applyActions(ancestors, 0, true);
+                action.execute();
+            }
         } catch (e) {
             AlertCore.warning('Reloading game state...', 3000);
             await this.load();
         }
-        this.intervalId = window.setInterval(
-            () => this.update(),
-            this.updateRate
-        );
+        // this.intervalId = window.setInterval(
+        //     () => this.update(),
+        //     this.updateRate
+        // );
         return action;
     }
+
+    // public async executeAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
+    //     clearInterval(this.intervalId);
+    //     const lastGotten = this.actionHistory.getLastTimestamp();
+    //     const action = await super.executeAction(actionType, ...args);
+    //     try {
+    //         const response = await axios.post('api/game/state/action', {
+    //             gameId: Core.getGameId(),
+    //             actionType: action.name,
+    //             actionArgs: args,
+    //             lastGotten
+    //         });
+    //         // remove our local version and use the server's
+    //         this.actionHistory.removeLast();
+    //         this.applyActions(response.data.actions, response.data.timestamp, true);
+    //     } catch (e) {
+    //         AlertCore.warning('Reloading game state...', 3000);
+    //         await this.load();
+    //     }
+    //     this.intervalId = window.setInterval(
+    //         () => this.update(),
+    //         this.updateRate
+    //     );
+    //     return action;
+    // }
 
     private async update() {
         try {
@@ -78,10 +109,12 @@ export default class BoardGameStateProxy extends BoardGameState {
         }
     }
 
+    // TODO: simplify this, we don't need the timestamp and such anymore
     private applyActions(actions: ActionDefinition[], timestamp: number, addToHistory = false) {
         this.lastActionGottenTimestamp = timestamp;
         actions.forEach((actionDef: ActionDefinition) => {
             const action = new (ActionTypes.actionTypes[actionDef.type])(this, ...actionDef.args);
+            action.id = actionDef.id;
             action.execute();
             if (addToHistory) {
                 this.actionHistory.add(action, actionDef.args);

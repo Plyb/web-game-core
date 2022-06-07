@@ -47,10 +47,12 @@ export function getGameController(GameStateType: StateConstructor) {
     
     router.post('/state/action', async (req, res, next) => {
         const gameId = req.body.gameId;
-        const lastGotten = req.body.lastGotten;
+        const parentId = req.body.parentId;
+        const id = req.body.id;
         const game = Game.getGame(gameId);
         try {
-            await game.gameState.executeAction(ActionTypes.actionTypes[req.body.actionType], ...req.body.actionArgs);
+            const actions = await game.gameState.executeAction(parentId, id, ActionTypes.actionTypes[req.body.actionType], ...req.body.actionArgs);
+            res.send({ actions });
         } catch (e: any) {
             if (e instanceof TypeError) {
                 next(new Error(e.message + ", did you forget to add it using ActionTypes.addActionType(...)?"));
@@ -59,9 +61,6 @@ export function getGameController(GameStateType: StateConstructor) {
             }
             return;
         }
-        
-        const actions = game.gameState.actionHistory.getSince(lastGotten);
-        res.send({actions: actions, timestamp: game.gameState.actionHistory.getLastTimestamp()});
     })
 
     return router;

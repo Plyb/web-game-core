@@ -9,10 +9,11 @@ import { BoardId } from "@plyb/web-game-core-shared/src/model/gameState/Board";
 import DrawPile from "@plyb/web-game-core-shared/src/model/gameState/pieces/DrawPile";
 import { DragPiece } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
 import { PlayerId } from "@plyb/web-game-core-shared/src/model/player";
+import { BoardGameStateProxy } from "..";
 
 export type Interaction = {
     label: string,
-    action: (gameState: BoardGameState) => string
+    action: (gameState: BoardGameStateProxy) => string
 }
 
 export enum Interactions {
@@ -38,19 +39,19 @@ function getDrawPileBoardInteractions(piece: DrawPile<Piece>, boardId: BoardId, 
         interactions.push({
             label: 'Draw',
             action: (gameState) => {
-                gameState.executeAction(DrawPieceAction, boardId, piece.id, interactingPlayer);
+                gameState.executeAndSendAction(DrawPieceAction, boardId, piece.id, interactingPlayer);
                 return Interactions.Draw;
             }
         }, {
             label: 'Shuffle',
             action: (gameState) => {
-                gameState.executeAction(ShuffleAction, boardId, piece.id, Date.now());
+                gameState.executeAndSendAction(ShuffleAction, boardId, piece.id, Date.now());
                 return Interactions.Shuffle;
             }
         }, {
             label: 'Flip',
             action: (gameState) => {
-                gameState.executeAction(FlipDrawPileAction, boardId, piece.id);
+                gameState.executeAndSendAction(FlipDrawPileAction, boardId, piece.id);
                 return Interactions.Flip;
             }
         });
@@ -63,15 +64,15 @@ export function getBoardInteractions(piece: Piece, boardId: BoardId, interacting
     const interactions: Interaction[] = [
         inspectInteraction,
         { label: 'Rotate left', action: (gameState) => {
-            gameState.executeAction(RotatePieceAction, piece.id, boardId, 90, true);
+            gameState.executeAndSendAction(RotatePieceAction, piece.id, boardId, 90, true);
             return Interactions.RotateLeft;
         }},
         { label: 'Rotate right', action: (gameState) => {
-            gameState.executeAction(RotatePieceAction, piece.id, boardId, -90, true);
+            gameState.executeAndSendAction(RotatePieceAction, piece.id, boardId, -90, true);
             return Interactions.RotateRight;
         }},
         { label: 'Collect', action: (gameState) => {
-            gameState.executeAction(CollectIntoDrawPileAction, piece.id, boardId);
+            gameState.executeAndSendAction(CollectIntoDrawPileAction, piece.id, boardId);
             return ''
         }}
     ];
@@ -92,7 +93,7 @@ export function getBoardInteractions(piece: Piece, boardId: BoardId, interacting
                     containerType: ContainerType.Board,
                     index: pieceLocation.x + pieceLocation.y * board.size.x,
                 };
-                gameState.executeAction(MovePiecesAction, to, selectedPieces.map(p => ({
+                gameState.executeAndSendAction(MovePiecesAction, to, selectedPieces.map(p => ({
                     pieceId: p.piece.id,
                     from: p.from,
                 })));
@@ -112,11 +113,11 @@ export function getInventoryInteractions(piece: Piece, inventoryId: PlayerId): I
     return [
         inspectInteraction,
         { label: 'Rotate left', action: (gameState) => {
-            gameState.executeAction(RotatePieceAction, piece.id, inventoryId, 90);
+            gameState.executeAndSendAction(RotatePieceAction, piece.id, inventoryId, 90);
             return Interactions.RotateLeft;
         }},
         { label: 'Rotate right', action: (gameState) => {
-            gameState.executeAction(RotatePieceAction, piece.id, inventoryId, -90);
+            gameState.executeAndSendAction(RotatePieceAction, piece.id, inventoryId, -90);
             return Interactions.RotateRight;
         }},
     ];
