@@ -13,7 +13,7 @@ import AlertCore from "./AlertCore";
 
 export default class BoardGameStateProxy extends BoardGameState {
     public selectedPieces: DragPiece[] = [];
-    private intervalId: number = -1;
+    private timeoutId: number = -1;
     private updateRate: number = 1000;
     constructor() {
         super([]);
@@ -21,13 +21,20 @@ export default class BoardGameStateProxy extends BoardGameState {
 
     public async setUpdateRate(updateRate: number) {
         this.updateRate = updateRate;
-        clearInterval(this.intervalId);
         const result = await this.load();
-        this.intervalId = window.setInterval(
-            () => this.update(),
-            updateRate
-        );
+        this.setUpdateTimeout();
         return result;
+    }
+
+    private setUpdateTimeout() {
+        clearTimeout(this.timeoutId);
+        this.timeoutId = window.setTimeout(
+            async () => {
+                await this.update();
+                this.setUpdateTimeout();
+            },
+            this.updateRate
+        );
     }
 
     public async load() {
@@ -44,7 +51,7 @@ export default class BoardGameStateProxy extends BoardGameState {
     }
 
     public async executeAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
-        clearInterval(this.intervalId);
+        clearTimeout(this.timeoutId);
         const lastGotten = this.actionHistory.getLastTimestamp();
         const action = await super.executeAction(actionType, ...args);
         try {
@@ -61,10 +68,7 @@ export default class BoardGameStateProxy extends BoardGameState {
             AlertCore.warning('Reloading game state...', 3000);
             await this.load();
         }
-        this.intervalId = window.setInterval(
-            () => this.update(),
-            this.updateRate
-        );
+        this.setUpdateTimeout();
         return action;
     }
 
