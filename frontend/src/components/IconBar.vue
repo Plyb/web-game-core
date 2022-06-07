@@ -14,13 +14,13 @@ import StateStore from "../StateStore";
 export default class IconBar extends Vue {
     undo() {
         if (this.hasActionToUndo) {
-            this.gameState.executeAction(UndoAction);
+            this.gameState.executeAndSendAction(UndoAction);
         }
     }
 
     redo() {
         if (this.hasActionToRedo) {
-            this.gameState.executeAction(RedoAction);
+            this.gameState.executeAndSendAction(RedoAction);
         }
     }
 

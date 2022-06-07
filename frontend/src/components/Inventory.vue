@@ -96,7 +96,7 @@ export default class Inventory extends Vue.with(Props) {
             pieceId: selectedPiece.piece.id,
             from: selectedPiece.from
         }));
-        StateStore.state.executeAction(
+        StateStore.state.executeAndSendAction(
             MovePiecesAction,
             {
                 containerId: this.playerId,

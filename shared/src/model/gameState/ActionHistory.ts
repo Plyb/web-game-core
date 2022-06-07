@@ -2,7 +2,7 @@ import UndoAction from "../../actions/UndoAction";
 import Action from "../../actions/Action";
 import RedoAction from "../../actions/RedoAction";
 
-class ActionNode {
+export class ActionNode {
     public readonly timestamp = Date.now();
 
     constructor(
@@ -16,13 +16,14 @@ class ActionNode {
 export type ActionDefinition = {
     type: string,
     args: any[],
+    id: string
 }
 
 export default class ActionHistory {
     private last: ActionNode | null = null;
     private first: ActionNode | null = null;
 
-    add(action: Action, constructorArgs: any[]): void {
+    add(action: Action, constructorArgs: any[]): ActionNode {
         const node = new ActionNode(action, constructorArgs);
         if (this.first === null || this.last === null) {
             this.last = node;
@@ -32,9 +33,24 @@ export default class ActionHistory {
             node.prev = this.last;
             this.last = node;
         }
+        return node;
     }
 
-    getSince(timestamp: number): ActionDefinition[] {
+    getById(id: string): ActionNode | null {
+        let node = this.last;
+        while (node) {
+            if (node.action.id === id) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    getLast() : ActionNode | null {
+        return this.last;
+    }
+
+    getSince(timestamp: number): ActionDefinition[] { //TODO: remove this
         const actions: ActionDefinition[] = [];
         let node = this.last;
         while (node !== null) {
@@ -42,6 +58,7 @@ export default class ActionHistory {
                 actions.push({
                     type: node.action.constructor.name,
                     args: node.constructorArgs,
+                    id: node.action.id,
                 });
             } else {
                 break;
