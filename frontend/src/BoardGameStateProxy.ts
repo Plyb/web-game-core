@@ -65,8 +65,10 @@ export default class BoardGameStateProxy extends BoardGameState {
             });
             const ancestors: ActionDefinition[] = response.data.actions;
             if (ancestors.length) {
-                action.undo();
-                // TODO: do we need to undo other actions possibly here too?
+                const numActionsToRemove = this.actionHistory.getSince(action.id).length + 1;
+                for (let i = 0; i < numActionsToRemove; i++) {
+                    this.actionHistory.removeLast();
+                }
                 this.applyActions(ancestors);
                 action.execute();
             }
