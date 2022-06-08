@@ -39,7 +39,7 @@ export function getGameController(GameStateType: StateConstructor) {
     
     router.get('/state/actions/:gameId/:lastGotten', (req, res) => {
         const gameId = req.params.gameId;
-        const lastGotten = parseInt(req.params.lastGotten);
+        const lastGotten = req.params.lastGotten;
         const game = Game.getGame(gameId);
         const actions = game.gameState.actionHistory.getSince(lastGotten);
         res.send({actions, timestamp: game.gameState.actionHistory.getLastTimestamp()});

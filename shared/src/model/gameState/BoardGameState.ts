@@ -64,14 +64,7 @@ export default class BoardGameState {
         const parent = this.actionHistory.getLast() && 
             (this.actionHistory.getById(parentId) || await this.waitForActionWithId(parentId));
         // TODO: deal with the case where the parent already has children making our action impossible
-        const descendants: ActionDefinition[] = [];
-        for (let node: ActionNode | null = parent?.next || null; node !== null; node = node.next) {
-            descendants.push({
-                type: node.action.name,
-                args: node.constructorArgs,
-                id: node.action.id,
-            });
-        }
+        const descendants: ActionDefinition[] = this.actionHistory.getDescendants(parent);
         actionInstance.execute();
         const node = this.actionHistory.add(actionInstance, args);
         this.actionPromises.get(actionInstance.id)?.resolve(node);

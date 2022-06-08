@@ -50,26 +50,32 @@ export default class ActionHistory {
         return this.last;
     }
 
-    getSince(timestamp: number): ActionDefinition[] { //TODO: remove this
-        const actions: ActionDefinition[] = [];
-        let node = this.last;
-        while (node !== null) {
-            if (node.timestamp > timestamp) {
-                actions.push({
-                    type: node.action.constructor.name,
-                    args: node.constructorArgs,
-                    id: node.action.id,
-                });
-            } else {
-                break;
-            }
-            node = node.prev;
+    getSince(nodeId: string): ActionDefinition[] {
+        const parent = this.getById(nodeId);
+        return this.getDescendants(parent);
+    }
+
+    getDescendants(parent: ActionNode | null): ActionDefinition[] {
+        const descendants: ActionDefinition[] = [];
+        for (let node: ActionNode | null = parent?.next || null; node !== null; node = node.next) {
+            descendants.push({
+                type: node.action.name,
+                args: node.constructorArgs,
+                id: node.action.id,
+            });
         }
-        return actions.reverse();
+        return descendants;
     }
 
     getAllActions(): ActionDefinition[] {
-        return this.getSince(0);
+        if (!this.first) {
+            return [];
+        }
+        return [{
+            type: this.first.action.name,
+            args: this.first.constructorArgs,
+            id: this.first.action.id
+        }, ...this.getDescendants(this.first)];
     }
 
     getLastTimestamp() {

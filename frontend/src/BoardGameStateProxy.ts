@@ -78,34 +78,10 @@ export default class BoardGameStateProxy extends BoardGameState {
         return action;
     }
 
-    // public async executeAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
-    //     clearInterval(this.intervalId);
-    //     const lastGotten = this.actionHistory.getLastTimestamp();
-    //     const action = await super.executeAction(actionType, ...args);
-    //     try {
-    //         const response = await axios.post('api/game/state/action', {
-    //             gameId: Core.getGameId(),
-    //             actionType: action.name,
-    //             actionArgs: args,
-    //             lastGotten
-    //         });
-    //         // remove our local version and use the server's
-    //         this.actionHistory.removeLast();
-    //         this.applyActions(response.data.actions, response.data.timestamp, true);
-    //     } catch (e) {
-    //         AlertCore.warning('Reloading game state...', 3000);
-    //         await this.load();
-    //     }
-    //     this.intervalId = window.setInterval(
-    //         () => this.update(),
-    //         this.updateRate
-    //     );
-    //     return action;
-    // }
 
     private async update() {
         try {
-            const response = await axios.get(`api/game/state/actions/${Core.getGameId()}/${this.lastActionGottenTimestamp}`);
+            const response = await axios.get(`api/game/state/actions/${Core.getGameId()}/${this.actionHistory.getLast()?.action.id}`);
             this.applyActions(response.data.actions, response.data.timestamp, true);
         } catch (e: any) {
             AlertCore.warning('Reloading game state...', 3000);
