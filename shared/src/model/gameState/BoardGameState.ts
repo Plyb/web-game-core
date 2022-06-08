@@ -61,9 +61,8 @@ export default class BoardGameState {
         actionInstance.id = id;
         const parent = this.actionHistory.getLast() && 
             (this.actionHistory.getById(parentId) || await this.waitForActionWithId(parentId));
-        // TODO: deal with the case where the parent already has children making our action impossible
-        const descendants: ActionDefinition[] = this.actionHistory.getDescendants(parent);
         actionInstance.execute();
+        const descendants: ActionDefinition[] = this.actionHistory.getDescendants(parent);
         const node = this.actionHistory.add(actionInstance, args);
         this.actionPromises.get(actionInstance.id)?.resolve(node);
         return descendants;
@@ -86,7 +85,7 @@ export default class BoardGameState {
 
 class ActionNodePromise {
     public resolve: (value: ActionNode | PromiseLike<ActionNode>) => void;
-    private reject: (value: ActionNode | PromiseLike<ActionNode>) => void; // TODO: timeout
+    private reject: () => void;
     public readonly promise: Promise<ActionNode>
     constructor() {
         this.promise = new Promise((res, rej) => {
@@ -95,5 +94,8 @@ class ActionNodePromise {
         })
         this.resolve = () => {};
         this.reject = () => {};
+        setTimeout(() => {
+            this.reject();
+        }, 10000);
     }
 }
