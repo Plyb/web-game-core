@@ -41,9 +41,8 @@ export default class BoardGameStateProxy extends BoardGameState {
         const response = await axios.get(`api/game/state/${Core.getGameId()}`);
         const originalGameState = JSON.parse(response.data.originalGameState);
         const actions = response.data.actions;
-        const timestamp = response.data.timestamp;
         this.updateFromPlain(originalGameState);
-        this.applyActions(actions, timestamp, true);
+        this.applyActions(actions);
     }
 
     public getInventory(): Piece[] {
@@ -67,7 +66,8 @@ export default class BoardGameStateProxy extends BoardGameState {
             const ancestors: ActionDefinition[] = response.data.actions;
             if (ancestors.length) {
                 action.undo();
-                this.applyActions(ancestors, 0, true);
+                // TODO: do we need to undo other actions possibly here too?
+                this.applyActions(ancestors);
                 action.execute();
             }
         } catch (e) {
@@ -82,23 +82,19 @@ export default class BoardGameStateProxy extends BoardGameState {
     private async update() {
         try {
             const response = await axios.get(`api/game/state/actions/${Core.getGameId()}/${this.actionHistory.getLast()?.action.id}`);
-            this.applyActions(response.data.actions, response.data.timestamp, true);
+            this.applyActions(response.data.actions);
         } catch (e: any) {
             AlertCore.warning('Reloading game state...', 3000);
             await this.load();
         }
     }
 
-    // TODO: simplify this, we don't need the timestamp and such anymore
-    private applyActions(actions: ActionDefinition[], timestamp: number, addToHistory = false) {
-        this.lastActionGottenTimestamp = timestamp;
+    private applyActions(actions: ActionDefinition[]) {
         actions.forEach((actionDef: ActionDefinition) => {
             const action = new (ActionTypes.actionTypes[actionDef.type])(this, ...actionDef.args);
             action.id = actionDef.id;
             action.execute();
-            if (addToHistory) {
-                this.actionHistory.add(action, actionDef.args);
-            }
+            this.actionHistory.add(action, actionDef.args);
         });
 
     }
@@ -110,6 +106,5 @@ export default class BoardGameStateProxy extends BoardGameState {
         this._players = plain.players;
         this._inventories = new Map(Object.entries(plain.inventories)
             .map(([id, pieces]: [string, Piece[]]) => [id, pieces.map(PieceTypes.copy)]));
-        this.lastActionGottenTimestamp = plain.lastActionGottenTimestamp;
     }
 }

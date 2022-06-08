@@ -33,7 +33,6 @@ export function getGameController(GameStateType: StateConstructor) {
         res.send({
             originalGameState: game.originalGameStateJson,
             actions: game.gameState.actionHistory.getAllActions(),
-            timestamp: game.gameState.actionHistory.getLastTimestamp(),
         });
     })
     
@@ -42,7 +41,7 @@ export function getGameController(GameStateType: StateConstructor) {
         const lastGotten = req.params.lastGotten;
         const game = Game.getGame(gameId);
         const actions = game.gameState.actionHistory.getSince(lastGotten);
-        res.send({actions, timestamp: game.gameState.actionHistory.getLastTimestamp()});
+        res.send({ actions });
     })
     
     router.post('/state/action', async (req, res, next) => {

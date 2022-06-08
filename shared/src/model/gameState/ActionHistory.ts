@@ -3,8 +3,6 @@ import Action from "../../actions/Action";
 import RedoAction from "../../actions/RedoAction";
 
 export class ActionNode {
-    public readonly timestamp = Date.now();
-
     constructor(
         public action: Action,
         public constructorArgs: any[] = [],
@@ -76,10 +74,6 @@ export default class ActionHistory {
             args: this.first.constructorArgs,
             id: this.first.action.id
         }, ...this.getDescendants(this.first)];
-    }
-
-    getLastTimestamp() {
-        return this.last ? this.last.timestamp : 0;
     }
 
     getNextUndoRedoAction(redo = false): Action | null {

@@ -10,7 +10,6 @@ export type ParametersExceptFirst<F> =
 export type ActionConstructor = new (gameState: BoardGameState, ...args: any[]) => Action;
 export default class BoardGameState {
     public readonly actionHistory: ActionHistory = new ActionHistory();
-    public lastActionGottenTimestamp: number = 0;
 
     protected _hub: Board;
     public get hub(): Board {
@@ -53,7 +52,6 @@ export default class BoardGameState {
             players: this._players,
             mats,
             inventories,
-            timestamp: this.lastActionGottenTimestamp,
         });
     }
 
