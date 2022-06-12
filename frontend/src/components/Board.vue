@@ -1,5 +1,5 @@
 <template>
-<div class="board">
+<div class="board" v-click-outside="() => pieceConfirmation = null">
     <!--BG grid-->
     <div class="bg-grid" :style="gridStyle">
         <div v-for="(_, i) in numGridCells" :key="_"
