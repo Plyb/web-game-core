@@ -5,7 +5,7 @@
         :style="getHorizWidthStyle(playerSeating.top.length, playerSeating.bottom.length)"
     >
         <PlayerSeat v-for="player in playerSeating.top" :key="player.id"
-            class="focusable"
+            :class="{'focusable': selectMode === SelectMode.default}"
             :player="player"
             :mat="gameState.mats.get(player.id)"
             :inventory="gameState.inventories.get(player.id)"
@@ -16,7 +16,7 @@
     <div class="vert-seating">
         <div>
             <PlayerSeat v-for="player in playerSeating.left.reverse()" :key="player.id"
-                class="focusable"
+                :class="{'focusable': selectMode === SelectMode.default}"
                 :player="player"
                 :mat="gameState.mats.get(player.id)"
                 :inventory="gameState.inventories.get(player.id)"
@@ -33,7 +33,7 @@
     <div class="vert-seating">
         <div>
             <PlayerSeat v-for="player in playerSeating.right" :key="player.id"
-                class="focusable"
+                :class="{'focusable': selectMode === SelectMode.default}"
                 :player="player"
                 :mat="gameState.mats.get(player.id)"
                 :inventory="gameState.inventories.get(player.id)"
@@ -47,7 +47,7 @@
         :style="getHorizWidthStyle(playerSeating.bottom.length, playerSeating.top.length)"
     >
         <PlayerSeat v-for="player in playerSeating.bottom.reverse()" :key="player.id"
-            class="focusable"
+            :class="{'focusable': selectMode === SelectMode.default}"
             :player="player"
             :mat="gameState.mats.get(player.id)"
             :inventory="gameState.inventories.get(player.id)"
