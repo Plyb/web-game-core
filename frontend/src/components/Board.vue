@@ -74,7 +74,7 @@ export default class BoardComponent extends Vue.with(Props) {
     }
 
     confirmPlacement() {
-        if (this.pieceConfirmation) {
+        if (this.pieceConfirmation !== null) {
             const fromPieces = StateStore.state.selectedPieces.map((selectedPiece) =>({
                 pieceId: selectedPiece.piece.id,
                 from: selectedPiece.from
@@ -94,7 +94,7 @@ export default class BoardComponent extends Vue.with(Props) {
     }
 
     get confirmationPieceLocation() {
-        if (this.pieceConfirmation) {
+        if (this.pieceConfirmation !== null) {
             return {
                 piece: StateStore.state.selectedPieces[StateStore.state.selectedPieces.length - 1].piece,
                 x: this.pieceConfirmation % this.model.size.x,
@@ -104,7 +104,7 @@ export default class BoardComponent extends Vue.with(Props) {
     }
 
     get showPlaceConfirmation() {
-        return this.pieceConfirmation && StateStore.state.selectedPieces.length;
+        return this.pieceConfirmation !== null && StateStore.state.selectedPieces.length;
     }
 }
 </script>
