@@ -40,6 +40,7 @@ export default class ActionHistory {
             if (node.action.id === id) {
                 return node;
             }
+            node = node.prev;
         }
         return null;
     }
@@ -55,7 +56,7 @@ export default class ActionHistory {
 
     getDescendants(parent: ActionNode | null): ActionDefinition[] {
         const descendants: ActionDefinition[] = [];
-        for (let node: ActionNode | null = parent?.next || null; node !== null; node = node.next) {
+        for (let node: ActionNode | null = parent ? parent?.next : this.first; node !== null; node = node.next) {
             descendants.push({
                 type: node.action.name,
                 args: node.constructorArgs,

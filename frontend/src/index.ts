@@ -26,7 +26,7 @@ async function startGame(username: string) {
 async function joinGame(id: string, username: string) {
 	try {
 		const res = await axios.put('/api/game', {id, username});
-		sessionStorage.setItem('gameId', id);
+		sessionStorage.setItem('gameId', id.toLowerCase());
 		sessionStorage.setItem('userId', res.data.id);
 		sessionStorage.setItem('username', username);
 		console.log("joined " + id);

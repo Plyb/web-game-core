@@ -30,7 +30,11 @@ export default class BoardGameStateProxy extends BoardGameState {
         clearTimeout(this.timeoutId);
         this.timeoutId = window.setTimeout(
             async () => {
-                await this.update();
+                try {
+                    await this.update();
+                } catch(e) {
+                    AlertCore.warning('Reloading game state...', 3000);
+                }
                 this.setUpdateTimeout();
             },
             this.updateRate
