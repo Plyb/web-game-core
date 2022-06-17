@@ -1,21 +1,14 @@
 <template>
 <div class="piece">
-    <FitText v-if="!isJoker">{{numberDisplay}}</FitText>
-    <FitText :class="{'red-suit': isRedSuit}">{{icon}}</FitText>
+    <img v-if="!isJoker" :src="numberAssetSource">
+    <img :src="suitAssetSource">
 </div>
 </template>
 
 <script lang="ts">
 import PieceOverlay from "./PieceOverlay.mixin";
 import PlayingCardPiece, { Suit } from "@plyb/web-game-core-shared/src/model/gameState/pieces/PlayingCardPiece";
-import { Options } from "vue-class-component";
-import FitText from "../FitText.vue";
 
-@Options({
-    components: {
-        FitText,
-    }
-})
 export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>() {
     get icon() {
         const suitToIcon = {
@@ -36,18 +29,33 @@ export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>()
         return this.piece.suit === Suit.Joker;
     }
 
-    get numberDisplay() {
+    get numberAssetName() {
         if (this.piece.number === 1) {
-            return "A";
+            return "a";
         } else if (this.piece.number === 11) {
-            return "J";
+            return "j";
         } else if (this.piece.number === 12) {
-            return "Q";
+            return "q";
         } else if (this.piece.number === 13) {
-            return "K";
+            return "k";
         } else {
             return this.piece.number.toString();
         }
+    }
+
+    get numberAssetSource() {
+        return require(`../../assets/cards/${this.numberAssetName}.svg`);
+    }
+
+    get suitAssetSource() {
+        const suitAssetName = {
+            [Suit.Clubs]: "club",
+            [Suit.Diamonds]: "diamond",
+            [Suit.Hearts]: "heart",
+            [Suit.Spades]: "spade",
+            [Suit.Joker]: "joker",
+        }
+        return require(`../../assets/cards/${suitAssetName[this.piece.suit]}.svg`);
     }
 }
 </script>
@@ -61,12 +69,8 @@ export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>()
     background-color: white;
 }
 
-.red-suit {
-    color: red;
-}
-
-h2 {
-    text-align: center;
-    font-size: 2vw;
+img {
+    width: 70%;
+    padding: 15%;
 }
 </style>
