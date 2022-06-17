@@ -1,7 +1,10 @@
 <template>
 <div class="piece">
-    <img v-if="!isJoker" :src="numberAssetSource">
-    <img :src="suitAssetSource">
+    <div v-if="!isJoker" class="cell">
+        <img :src="numberAssetSource">
+    </div>
+    <div class="cell"><img :src="suitAssetSource"/></div>
+    
 </div>
 </template>
 
@@ -69,8 +72,13 @@ export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>()
     background-color: white;
 }
 
-img {
-    width: 70%;
+.cell {
     padding: 15%;
+    width: 70%;
+    display: flex; /* I don't know why setting this to flex gets the two to play nicely, but it does */
+}
+
+img {
+    width: 100%;
 }
 </style>
