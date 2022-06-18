@@ -2,6 +2,7 @@ import Game from '../model/game'
 import express from "express";
 import ActionTypes from '@plyb/web-game-core-shared/src/actions/ActionTypes';
 import { StateConstructor } from '..';
+import { logAction } from '../logger';
 
 export function getGameController(GameStateType: StateConstructor) {
     const router = express.Router();
@@ -51,6 +52,7 @@ export function getGameController(GameStateType: StateConstructor) {
         const game = Game.getGame(gameId);
         try {
             const actions = await game.gameState.executeAction(parentId, id, ActionTypes.actionTypes[req.body.actionType], ...req.body.actionArgs);
+            logAction(game, req.body.actionType, req.body.actionArgs);
             res.send({ actions });
         } catch (e: any) {
             if (e instanceof TypeError) {

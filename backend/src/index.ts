@@ -5,6 +5,8 @@ import { getGameController } from "./controllers/gameController";
 import { LobbyController } from "./controllers/lobbyController";
 import ActionTypes, { ActionConstructor } from "@plyb/web-game-core-shared/src/actions/ActionTypes";
 import { BoardGameState, Player } from "@plyb/web-game-core-shared";
+import { log } from "./logger";
+import Game from "./model/game";
 type ActionList = { [key: string]: ActionConstructor };
 export type StateConstructor = (players: Player[]) => BoardGameState;
 export default (
@@ -31,8 +33,14 @@ export default (
     routes.forEach(route => {
         app.use(route.path, route.router);
     })
+
     app.use(function (error: any, req: Request, res: Response, next: NextFunction) {
         console.log(error.message);
+        if (req.body?.gameId) {
+            log(Game.getGame(req.body.gameId), error);
+        } else if (req.params?.gameId) {
+            log(Game.getGame(req.params.gameId), 'Error: ' + error)
+        }
         res.status(500).send(error.message);
     })
 
