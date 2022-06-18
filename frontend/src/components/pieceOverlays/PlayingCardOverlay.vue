@@ -1,21 +1,17 @@
 <template>
 <div class="piece">
-    <FitText v-if="!isJoker">{{numberDisplay}}</FitText>
-    <FitText :class="{'red-suit': isRedSuit}">{{icon}}</FitText>
+    <div v-if="!isJoker" class="cell">
+        <img :src="numberAssetSource">
+    </div>
+    <div class="cell"><img :src="suitAssetSource"/></div>
+    
 </div>
 </template>
 
 <script lang="ts">
 import PieceOverlay from "./PieceOverlay.mixin";
 import PlayingCardPiece, { Suit } from "@plyb/web-game-core-shared/src/model/gameState/pieces/PlayingCardPiece";
-import { Options } from "vue-class-component";
-import FitText from "../FitText.vue";
 
-@Options({
-    components: {
-        FitText,
-    }
-})
 export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>() {
     get icon() {
         const suitToIcon = {
@@ -36,18 +32,33 @@ export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>()
         return this.piece.suit === Suit.Joker;
     }
 
-    get numberDisplay() {
+    get numberAssetName() {
         if (this.piece.number === 1) {
-            return "A";
+            return "a";
         } else if (this.piece.number === 11) {
-            return "J";
+            return "j";
         } else if (this.piece.number === 12) {
-            return "Q";
+            return "q";
         } else if (this.piece.number === 13) {
-            return "K";
+            return "k";
         } else {
             return this.piece.number.toString();
         }
+    }
+
+    get numberAssetSource() {
+        return require(`../../assets/cards/${this.numberAssetName}.svg`);
+    }
+
+    get suitAssetSource() {
+        const suitAssetName = {
+            [Suit.Clubs]: "club",
+            [Suit.Diamonds]: "diamond",
+            [Suit.Hearts]: "heart",
+            [Suit.Spades]: "spade",
+            [Suit.Joker]: "joker",
+        }
+        return require(`../../assets/cards/${suitAssetName[this.piece.suit]}.svg`);
     }
 }
 </script>
@@ -61,12 +72,13 @@ export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>()
     background-color: white;
 }
 
-.red-suit {
-    color: red;
+.cell {
+    padding: 15%;
+    width: 70%;
+    display: flex; /* I don't know why setting this to flex gets the two to play nicely, but it does */
 }
 
-h2 {
-    text-align: center;
-    font-size: 2vw;
+img {
+    width: 100%;
 }
 </style>

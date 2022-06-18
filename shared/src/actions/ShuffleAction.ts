@@ -49,7 +49,8 @@ export default class ShuffleAction extends Action {
         const postSortOrder = this.postSortOrder;
         if (postSortOrder === undefined) {
             const generator = seedrandom(this.seed.toString());
-            pieces.sort((a, b) => generator() - 0.5);
+            const idToRandom = Object.fromEntries(pieces.map(piece => [piece.id, generator()]));
+            pieces.sort((a, b) => idToRandom[a.id] - idToRandom[b.id]);
             this.postSortOrder = this.getSortOrder();
             return;
         }
