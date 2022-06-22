@@ -15,6 +15,8 @@ export default class BoardGameStateProxy extends BoardGameState {
     public selectedPieces: DragPiece[] = [];
     private timeoutId: number = -1;
     private updateRate: number = 1000;
+    private numActionsEnRoute = 0;
+    private updateController = new AbortController();
     constructor() {
         super([]);
     }
@@ -32,21 +34,28 @@ export default class BoardGameStateProxy extends BoardGameState {
             async () => {
                 try {
                     await this.update();
+                    this.setUpdateTimeout();
                 } catch(e) {
-                    AlertCore.warning('Reloading game state...', 3000);
+                    this.reload();
                 }
-                this.setUpdateTimeout();
             },
             this.updateRate
         );
     }
 
     public async load() {
+        this.updateController.abort();
         const response = await axios.get(`api/game/state/${Core.getGameId()}`);
         const originalGameState = JSON.parse(response.data.originalGameState);
         const actions = response.data.actions;
         this.updateFromPlain(originalGameState);
         this.applyActions(actions);
+        this.setUpdateTimeout();
+    }
+
+    private async reload() {
+        AlertCore.warning('Reloading game state...', 3000);
+        await this.load();
     }
 
     public getInventory(): Piece[] {
@@ -54,7 +63,7 @@ export default class BoardGameStateProxy extends BoardGameState {
     }
 
     public async executeAndSendAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
-        clearTimeout(this.timeoutId);
+        this.pauseUpdatesForExecute();
         const action = new actionType(this, ...args);
         action.execute();
         const parent = this.actionHistory.getLast();
@@ -70,28 +79,47 @@ export default class BoardGameStateProxy extends BoardGameState {
             const ancestors: ActionDefinition[] = response.data.actions;
             if (ancestors.length) {
                 const numActionsToRemove = this.actionHistory.getSince(action.id).length + 1;
+                const removedActions: ActionDefinition[] = [];
                 for (let i = 0; i < numActionsToRemove; i++) {
-                    this.actionHistory.removeLast();
+                    const removed = this.actionHistory.removeLast();
+                    if (removed) {
+                        removedActions.push(removed);
+                    }
                 }
-                this.applyActions(ancestors);
-                action.execute();
+                this.applyActions([...ancestors, ...removedActions.reverse()]);
             }
         } catch (e) {
-            AlertCore.warning('Reloading game state...', 3000);
-            await this.load();
+            await this.reload();
         }
-        this.setUpdateTimeout();
+        this.resumeUpdatesFromExecute();
         return action;
     }
 
+    private pauseUpdatesForExecute() {
+        this.numActionsEnRoute++;
+        clearTimeout(this.timeoutId);
+        this.updateController.abort();
+    }
+
+    private resumeUpdatesFromExecute() {
+        this.numActionsEnRoute--;
+        if (!this.numActionsEnRoute) {
+            clearTimeout(this.timeoutId);
+            this.setUpdateTimeout();
+        }
+    }
 
     private async update() {
         try {
-            const response = await axios.get(`api/game/state/actions/${Core.getGameId()}/${this.actionHistory.getLast()?.action.id}`);
+            this.updateController = new AbortController();
+            const response = await axios.get(`api/game/state/actions/${Core.getGameId()}/${this.actionHistory.getLast()?.action.id}`, {
+                signal: this.updateController.signal
+            });
             this.applyActions(response.data.actions);
         } catch (e: any) {
-            AlertCore.warning('Reloading game state...', 3000);
-            await this.load();
+            if (!this.updateController.signal.aborted) {
+                this.reload();
+            }
         }
     }
 

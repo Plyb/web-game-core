@@ -57,11 +57,7 @@ export default class ActionHistory {
     getDescendants(parent: ActionNode | null): ActionDefinition[] {
         const descendants: ActionDefinition[] = [];
         for (let node: ActionNode | null = parent ? parent?.next : this.first; node !== null; node = node.next) {
-            descendants.push({
-                type: node.action.name,
-                args: node.constructorArgs,
-                id: node.action.id,
-            });
+            descendants.push(toActionDefinition(node));
         }
         return descendants;
     }
@@ -70,11 +66,7 @@ export default class ActionHistory {
         if (!this.first) {
             return [];
         }
-        return [{
-            type: this.first.action.name,
-            args: this.first.constructorArgs,
-            id: this.first.action.id
-        }, ...this.getDescendants(this.first)];
+        return [toActionDefinition(this.first), ...this.getDescendants(this.first)];
     }
 
     getNextUndoRedoAction(redo = false): Action | null {
@@ -106,8 +98,9 @@ export default class ActionHistory {
         this.first = null;
     }
 
-    removeLast() {
+    removeLast() : ActionDefinition | null {
         if (this.last) {
+            const removed = toActionDefinition(this.last);
             this.last.action.undo();
             if (this.last.prev) {
                 this.last.prev.next = null;
@@ -116,6 +109,17 @@ export default class ActionHistory {
             if (!this.last) {
                 this.first = null;
             }
+            return removed;
         }
+
+        return null;
+    }
+}
+
+function toActionDefinition(node: ActionNode): ActionDefinition {
+    return {
+        type: node.action.name,
+        args: node.constructorArgs,
+        id: node.action.id
     }
 }

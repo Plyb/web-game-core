@@ -56,10 +56,10 @@ export default class BoardGameState {
     }
 
     // TODO: proxy doesn't need this method. We might want to extract it out into another class
-    public async executeAction<T extends ActionConstructor>(parentId: string, id: string, actionType: T, ...args: ParametersExceptFirst<T>): Promise<ActionDefinition[]> {
+    public async executeAction<T extends ActionConstructor>(parentId: string | undefined, id: string, actionType: T, ...args: ParametersExceptFirst<T>): Promise<ActionDefinition[]> {
         const actionInstance = new actionType(this, ...args);
         actionInstance.id = id;
-        const parent = this.actionHistory.getLast() && 
+        const parent = parentId === undefined ? null : 
             (this.actionHistory.getById(parentId) || await this.waitForActionWithId(parentId));
         actionInstance.execute();
         const descendants: ActionDefinition[] = this.actionHistory.getDescendants(parent);
