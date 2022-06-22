@@ -116,14 +116,13 @@ export default class BoardComponent extends Vue.with(Props) {
 
 .bg-grid {
     display: grid;
-    grid-gap: 1px;
     border: 1px solid black;
 }
 
 .bg-grid-cell {
     box-sizing: border-box;
     background-color: #fff;
-    border: 1px solid black;
+    border: 1px solid lightgrey;
     height: 0;
     padding-bottom: calc(100% - 2px); /* 100% - 2px for border */
 }
