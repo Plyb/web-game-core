@@ -1,7 +1,24 @@
 <template>
 <div class="piece">
     <div v-if="!isJoker" class="cell">
-        <img :src="numberAssetSource">
+        <svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 75 75"
+            preserveAspectRatio="xMinYMid meet"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+        >
+            <text
+                x="50%"
+                y="50%"
+                text-anchor="middle"
+                dominant-baseline="middle"
+                font-size="75"
+                fill="black"
+                font-family="Helvetica"
+            >{{value}}</text>
+        </svg>
     </div>
     <div class="cell"><img :src="suitAssetSource"/></div>
     
@@ -13,41 +30,22 @@ import PieceOverlay from "./PieceOverlay.mixin";
 import PlayingCardPiece, { Suit } from "@plyb/web-game-core-shared/src/model/gameState/pieces/PlayingCardPiece";
 
 export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>() {
-    get icon() {
-        const suitToIcon = {
-            [Suit.Clubs]: "♣",
-            [Suit.Diamonds]: "♦",
-            [Suit.Hearts]: "♥",
-            [Suit.Spades]: "♠",
-            [Suit.Joker]: "😜",
-        }
-        return suitToIcon[this.piece.suit];
-    }
-
-    get isRedSuit() {
-        return this.piece.suit === Suit.Hearts || this.piece.suit === Suit.Diamonds;
-    }
-
     get isJoker() {
         return this.piece.suit === Suit.Joker;
     }
 
-    get numberAssetName() {
+    get value() {
         if (this.piece.number === 1) {
-            return "a";
+            return "A";
         } else if (this.piece.number === 11) {
-            return "j";
+            return "J";
         } else if (this.piece.number === 12) {
-            return "q";
+            return "Q";
         } else if (this.piece.number === 13) {
-            return "k";
+            return "K";
         } else {
             return this.piece.number.toString();
         }
-    }
-
-    get numberAssetSource() {
-        return require(`../../assets/cards/${this.numberAssetName}.svg`);
     }
 
     get suitAssetSource() {
