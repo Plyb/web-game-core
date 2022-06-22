@@ -14,7 +14,7 @@
     </template>
 
     <svg :viewBox="`0 0 ${size.x} ${size.y}`" class="overlay" preserveAspectRation="none">
-        <path fill="transparent" :stroke="isSelected ? 'green' : 'black'" stroke-width="5" :d="svgBorderPath"></path>
+        <path fill="transparent" :stroke="isSelected ? 'green' : 'black'" stroke-width="5%" :d="svgBorderPath"></path>
     </svg>
 </div>
 </template>
