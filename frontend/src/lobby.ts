@@ -3,7 +3,7 @@ import Core from "./index";
 
 export default class Lobby {
     private playerNames: string[];
-    private intervalId: number = -1;
+    private timeoutId: number = -1;
     private loaded = false;
     private started = false;
     private listeners: LobbyListener[] = [];
@@ -14,9 +14,12 @@ export default class Lobby {
     }
 
     public setUpdateRate(updateRate: number) {
-        clearInterval(this.intervalId);
-        this.intervalId = window.setInterval(
-            () => this.update(),
+        clearTimeout(this.timeoutId);
+        this.timeoutId = window.setTimeout(
+            async () => {
+                await this.update();
+                this.setUpdateRate(updateRate);
+            },
             updateRate
         );
     }
@@ -81,7 +84,7 @@ export default class Lobby {
     }
 
     private stopUpdate() {
-        clearInterval(this.intervalId);
+        clearTimeout(this.timeoutId);
     }
 }
 
