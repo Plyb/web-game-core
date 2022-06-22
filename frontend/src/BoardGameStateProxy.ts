@@ -17,6 +17,7 @@ export default class BoardGameStateProxy extends BoardGameState {
     private updateRate: number = 1000;
     private numActionsEnRoute = 0;
     private updateController = new AbortController();
+    private reloadOccured = false;
     constructor() {
         super([]);
     }
@@ -55,6 +56,7 @@ export default class BoardGameStateProxy extends BoardGameState {
 
     private async reload() {
         AlertCore.warning('Reloading game state...', 3000);
+        this.reloadOccured = true;
         await this.load();
     }
 
@@ -77,7 +79,7 @@ export default class BoardGameStateProxy extends BoardGameState {
                 parentId: parent?.action.id
             });
             const ancestors: ActionDefinition[] = response.data.actions;
-            if (ancestors.length) {
+            if (ancestors.length && !this.reloadOccured) {
                 const numActionsToRemove = this.actionHistory.getSince(action.id).length + 1;
                 const removedActions: ActionDefinition[] = [];
                 for (let i = 0; i < numActionsToRemove; i++) {
@@ -106,6 +108,7 @@ export default class BoardGameStateProxy extends BoardGameState {
         if (!this.numActionsEnRoute) {
             clearTimeout(this.timeoutId);
             this.setUpdateTimeout();
+            this.reloadOccured = false;
         }
     }
 
