@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response, Router } from "express"
+import expressWs from 'express-ws';
 import 'reflect-metadata';
 import bodyParser from "body-parser";
 import { getGameController } from "./controllers/gameController";
@@ -7,7 +8,6 @@ import ActionTypes, { ActionConstructor } from "@plyb/web-game-core-shared/src/a
 import { BoardGameState, Player } from "@plyb/web-game-core-shared";
 import { log } from "./logger";
 import Game from "./model/game";
-import websockets from "./websockets";
 type ActionList = { [key: string]: ActionConstructor };
 export type StateConstructor = (players: Player[]) => BoardGameState;
 export default (
@@ -18,6 +18,7 @@ export default (
     ActionTypes.addActionTypes(usingActions);
 
     const app = express();
+    expressWs(app);
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({
         extended: false
@@ -44,7 +45,6 @@ export default (
         }
         res.status(500).send(error.message);
     })
-
-    const server = app.listen(3005, () => console.log('Server listening on port 3005!'));
-    websockets(server);
+    
+    app.listen(3005, () => console.log('Server listening on port 3005!'));
 }

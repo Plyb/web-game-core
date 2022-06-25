@@ -64,5 +64,14 @@ export function getGameController(GameStateType: StateConstructor) {
         }
     })
 
+    router.ws('/test', function(ws, req) {
+        const [path, params] = req.url.split('?');
+        const connectionParams = new URLSearchParams(params);
+        ws.on('message', (msg) => {
+            const parsedMessage = JSON.parse(msg.toString());
+            ws.send('Echoing "' + parsedMessage + '" from ' + connectionParams.get('user'));
+        })
+    })
+
     return router;
 }
