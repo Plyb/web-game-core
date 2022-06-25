@@ -7,6 +7,7 @@ import ActionTypes, { ActionConstructor } from "@plyb/web-game-core-shared/src/a
 import { BoardGameState, Player } from "@plyb/web-game-core-shared";
 import { log } from "./logger";
 import Game from "./model/game";
+import websockets from "./websockets";
 type ActionList = { [key: string]: ActionConstructor };
 export type StateConstructor = (players: Player[]) => BoardGameState;
 export default (
@@ -44,5 +45,6 @@ export default (
         res.status(500).send(error.message);
     })
 
-    app.listen(3005, () => console.log('Server listening on port 3005!'));
+    const server = app.listen(3005, () => console.log('Server listening on port 3005!'));
+    websockets(server);
 }
