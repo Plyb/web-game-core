@@ -17,17 +17,17 @@ export class SocketRouter {
     }
 }
 
+export function parseReqParams(req: Request) {
+    const [path, params] = req.url.split('?');
+    return new URLSearchParams(params);
+}
+
 export default class SocketServer extends SocketRouter {
     // TODO: set up deletion on disconnect
     // TODO: we'll need to figure out middleware
 
-    public connect(ws: ws, req: Request) {
-        const [path, params] = req.url.split('?');
-        const connectionParams = new URLSearchParams(params);
-        const userId = connectionParams.get('user'); // TODO constantize this
-        if (!userId) {
-            throw new Error('Must include user in connection parameters')
-        }
+    public connect(ws: ws, req: Request, userId: string) {
+        const connectionParams = parseReqParams(req);
         
         ws.on('message', (msg) => {
             const parsedMessage = JSON.parse(msg.toString());

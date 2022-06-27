@@ -8,7 +8,8 @@ import ActionTypes, { ActionConstructor } from "@plyb/web-game-core-shared/src/a
 import { BoardGameState, Player } from "@plyb/web-game-core-shared";
 import { log } from "./logger";
 import Game from "./model/game";
-import SocketServer, { SocketRouter } from "./socketListener";
+import SocketServer, { SocketRouter } from "./socketServer"
+import { apiController } from "./controllers/apiController";
 type ActionList = { [key: string]: ActionConstructor };
 export type StateConstructor = (players: Player[]) => BoardGameState;
 export default (
@@ -35,26 +36,7 @@ export default (
     // testing
     //
     const socketServer = new SocketServer();
-    const router = express.Router();
-    router.ws('/test', (ws, req) => {
-        socketServer.connect(ws, req);
-    })
-
-    socketServer.use('/api/game', (function() {
-        const router = new SocketRouter();
-
-        router.message('/test', (msg, send, userId) => {
-            send('Echoing "' + msg + '" from ' + userId);
-        })
-
-        return router;
-    })())
-
-    app.use('/api/game', router);
-
-    //
-    // end testing
-    //
+    app.use('/api', apiController(socketServer));
 
     // app.use("/api/game", getGameController(GameStateType));
     app.use("/api/lobby", LobbyController.routes);

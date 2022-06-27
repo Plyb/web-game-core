@@ -10,10 +10,26 @@ import { Vec2 } from '@plyb/web-game-core-shared/src/model/gameState/types';
 import Vue, { createApp, DefineComponent } from 'vue'
 import router from './router/index'
 import App from './App.vue'
+import WebSocketAsPromised from 'websocket-as-promised';
+
+let socket: WebSocketAsPromised;
+async function sendRequest(path: string, body: any) {
+	return await socket.sendRequest({
+		path,
+		body
+	});
+}
 
 async function startGame(username: string) {
 	try {
-		const res = await axios.post('/api/game', {username});
+		socket = new WebSocketAsPromised('ws://' + window.location.host + '/api?username=' + username + '&newGame=true' , {
+			packMessage: data => JSON.stringify(data),
+			unpackMessage: data => JSON.parse(data.toString()),
+			attachRequestId: (data, id) => Object.assign({id}, data), // attach requestId to message as `id` field
+  			extractRequestId: data => data?.id, 
+		});
+		await socket.open();
+		const res = await sendRequest('/api/game', { username, newGame: true });
 		const {gameId, playerId} = res.data
 		sessionStorage.setItem('gameId', gameId);
 		sessionStorage.setItem('userId', playerId);
@@ -25,11 +41,10 @@ async function startGame(username: string) {
 
 async function joinGame(id: string, username: string) {
 	try {
-		const res = await axios.put('/api/game', {id, username});
+		const res = await sendRequest('/api/game', {id, username});
 		sessionStorage.setItem('gameId', id.toLowerCase());
-		sessionStorage.setItem('userId', res.data.id);
+		sessionStorage.setItem('userId', res.data.playerId);
 		sessionStorage.setItem('username', username);
-		console.log("joined " + id);
 	} catch (e: any) {
 		throw ensureIsError(e);
 	}
