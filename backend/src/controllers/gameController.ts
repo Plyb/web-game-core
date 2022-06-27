@@ -3,6 +3,7 @@ import express from "express";
 import ActionTypes from '@plyb/web-game-core-shared/src/actions/ActionTypes';
 import { StateConstructor } from '..';
 import { logAction } from '../logger';
+import SocketClientProxy from '../socketListener';
 
 export function getGameController(GameStateType: StateConstructor) {
     const router = express.Router();
@@ -62,15 +63,6 @@ export function getGameController(GameStateType: StateConstructor) {
             }
             return;
         }
-    })
-
-    router.ws('/test', function(ws, req) {
-        const [path, params] = req.url.split('?');
-        const connectionParams = new URLSearchParams(params);
-        ws.on('message', (msg) => {
-            const parsedMessage = JSON.parse(msg.toString());
-            ws.send('Echoing "' + parsedMessage + '" from ' + connectionParams.get('user'));
-        })
     })
 
     return router;
