@@ -13,7 +13,7 @@ import App from './App.vue'
 import WebSocketAsPromised from 'websocket-as-promised';
 
 let socket: WebSocketAsPromised;
-async function sendRequest(path: string, body: any) {
+async function sendRequest(path: string, body?: any) {
 	return await socket.sendRequest({
 		path,
 		body
@@ -21,29 +21,32 @@ async function sendRequest(path: string, body: any) {
 }
 
 async function startGame(username: string) {
+	await connectToGame(username);
+}
+
+async function joinGame(id: string, username: string) {
+	await connectToGame(username, id);
+}
+
+async function connectToGame(username: string, gameId?: string) {
+	const newGame = !gameId;
 	try {
-		socket = new WebSocketAsPromised('ws://' + window.location.host + '/api?username=' + username + '&newGame=true' , {
+		const params = new URLSearchParams();
+		params.append('username', username);
+		params.append('newGame', newGame.toString());
+		params.append('gameId', gameId || '');
+
+		socket = new WebSocketAsPromised('ws://' + window.location.host + '/api?' + params , {
 			packMessage: data => JSON.stringify(data),
 			unpackMessage: data => JSON.parse(data.toString()),
 			attachRequestId: (data, id) => Object.assign({id}, data), // attach requestId to message as `id` field
   			extractRequestId: data => data?.id, 
 		});
 		await socket.open();
-		const res = await sendRequest('/api/game', { username, newGame: true });
-		const {gameId, playerId} = res.data
-		sessionStorage.setItem('gameId', gameId);
-		sessionStorage.setItem('userId', playerId);
-		sessionStorage.setItem('username', username);
-	} catch (e: any) {
-		throw ensureIsError(e);
-	}
-}
-
-async function joinGame(id: string, username: string) {
-	try {
-		const res = await sendRequest('/api/game', {id, username});
-		sessionStorage.setItem('gameId', id.toLowerCase());
-		sessionStorage.setItem('userId', res.data.playerId);
+		const res = await sendRequest('/api/game/get-game-info');
+		const {gameId: newGameId, userId} = res.body;
+		sessionStorage.setItem('gameId', newGameId);
+		sessionStorage.setItem('userId', userId);
 		sessionStorage.setItem('username', username);
 	} catch (e: any) {
 		throw ensureIsError(e);

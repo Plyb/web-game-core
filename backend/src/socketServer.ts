@@ -1,7 +1,13 @@
 import { json, Request } from "express";
 import * as ws from 'ws';
+import Game from "./model/game";
 
-type MessageHandler = (msg: any, send: (responseBody: any) => void, userId: string) => void
+type MessageHandler = (
+        msg: any,
+        send: (responseBody: any) => void,
+        userId: string,
+        game: Game
+    ) => void
 
 export class SocketRouter {
     protected handlers: {[path: string]: MessageHandler} = {};
@@ -26,7 +32,7 @@ export default class SocketServer extends SocketRouter {
     // TODO: set up deletion on disconnect
     // TODO: we'll need to figure out middleware
 
-    public connect(ws: ws, req: Request, userId: string) {
+    public connect(ws: ws, req: Request, userId: string, game: Game) {
         const connectionParams = parseReqParams(req);
         
         ws.on('message', (msg) => {
@@ -38,8 +44,9 @@ export default class SocketServer extends SocketRouter {
             }
             this.handlers[path](
                 reqBody,
-                (resBody) => ws.send(resBody),
-                userId
+                (resBody) => ws.send(JSON.stringify({ id: parsedMessage.id, body: resBody})),
+                userId,
+                game
             );
         })
     }

@@ -36,13 +36,15 @@ export default (
     // testing
     //
     const socketServer = new SocketServer();
+    socketServer.use("/api/game", getGameController(GameStateType));
     app.use('/api', apiController(socketServer));
 
-    // app.use("/api/game", getGameController(GameStateType));
     app.use("/api/lobby", LobbyController.routes);
     routes.forEach(route => {
         app.use(route.path, route.router);
     })
+
+
 
     app.use(function (error: any, req: Request, res: Response, next: NextFunction) {
         console.log(error.message);
