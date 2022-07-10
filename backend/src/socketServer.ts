@@ -1,13 +1,14 @@
+import { Player } from "@plyb/web-game-core-shared";
 import { json, Request } from "express";
 import * as ws from 'ws';
 import Game from "./model/game";
 
 type MessageHandler = (
-        msg: any,
-        send: (responseBody: any) => void,
-        userId: string,
-        game: Game
-    ) => void
+    body: any,
+    send: (responseBody: any) => void,
+    userId: string,
+    game: Game
+) => void
 
 export class SocketRouter {
     protected handlers: {[path: string]: MessageHandler} = {};
@@ -31,8 +32,10 @@ export function parseReqParams(req: Request) {
 export default class SocketServer extends SocketRouter {
     // TODO: set up deletion on disconnect
     // TODO: we'll need to figure out middleware
+    private connectHandler: ConnectHandler;
+    private connectedSockets: ws[] = [];
 
-    public connect(ws: ws, req: Request, userId: string, game: Game) {
+    public connect(ws: ws, req: Request, player: Player, game: Game) {
         const connectionParams = parseReqParams(req);
         
         ws.on('message', (msg) => {
@@ -45,9 +48,27 @@ export default class SocketServer extends SocketRouter {
             this.handlers[path](
                 reqBody,
                 (resBody) => ws.send(JSON.stringify({ id: parsedMessage.id, body: resBody})),
-                userId,
+                player.id,
                 game
             );
-        })
+        });
+
+        this.connectHandler((path, responseBody) => {
+            this.connectedSockets.forEach((otherSocket: ws) => {
+                otherSocket.send(JSON.stringify({ path, body: responseBody }))
+            })
+        }, player, game);
+
+        this.connectedSockets.push(ws);
+    }
+
+    public onConnect(handler: ConnectHandler) {
+        this.connectHandler = handler;
     }
 }
+
+type ConnectHandler = (
+    sendAll: (path: string, responseBody: any) => void,
+    player: Player,
+    game: Game,
+) => void;

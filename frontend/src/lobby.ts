@@ -1,5 +1,6 @@
 import axios from "axios";
-import Core from "./index";
+import Core, { sendRequest, setSocketListener } from "./index";
+import SocketListener from "./socketListener";
 
 export default class Lobby {
     private playerNames: string[];
@@ -10,26 +11,23 @@ export default class Lobby {
 
     constructor() {
         this.playerNames = [];
-        this.update();
+        const socketListener = new SocketListener();
+
+        socketListener.message('/lobby/player-joined', (body) => {
+            const playerName = body.playerName;
+            this.playerNames.push(playerName);
+        })
+
+        setSocketListener(socketListener);
+        this.load();
     }
 
-    public setUpdateRate(updateRate: number) {
-        clearTimeout(this.timeoutId);
-        this.timeoutId = window.setTimeout(
-            async () => {
-                await this.update();
-                this.setUpdateRate(updateRate);
-            },
-            updateRate
-        );
-    }
-
-    private async update() {
+    private async load() {
         try {
-            const response = await axios.get(`/api/lobby/${Core.getGameId()}`);
-            this.playerNames = response.data.players;
+            const response = await sendRequest('/lobby/get-players');
+            this.playerNames = response.body.players;
             this.loaded = true;
-            this.started = response.data.started;
+            this.started = response.body.started;
             if (this.started) {
                 this.onGameStarted();
             }

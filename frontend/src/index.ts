@@ -11,9 +11,10 @@ import Vue, { createApp, DefineComponent } from 'vue'
 import router from './router/index'
 import App from './App.vue'
 import WebSocketAsPromised from 'websocket-as-promised';
+import SocketListener from './socketListener';
 
 let socket: WebSocketAsPromised;
-async function sendRequest(path: string, body?: any) {
+export async function sendRequest(path: string, body?: any) {
 	return await socket.sendRequest({
 		path,
 		body
@@ -26,6 +27,11 @@ async function startGame(username: string) {
 
 async function joinGame(id: string, username: string) {
 	await connectToGame(username, id);
+}
+
+export function setSocketListener(listener: SocketListener) {
+	socket.onMessage.removeAllListeners();
+	socket.onMessage.addListener(listener.getWebsocketAsPromisedListener());
 }
 
 async function connectToGame(username: string, gameId?: string) {

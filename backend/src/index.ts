@@ -3,7 +3,7 @@ import expressWs from 'express-ws';
 import 'reflect-metadata';
 import bodyParser from "body-parser";
 import { getGameController } from "./controllers/gameController";
-import { LobbyController } from "./controllers/lobbyController";
+import LobbyController from "./controllers/lobbyController";
 import ActionTypes, { ActionConstructor } from "@plyb/web-game-core-shared/src/actions/ActionTypes";
 import { BoardGameState, Player } from "@plyb/web-game-core-shared";
 import { log } from "./logger";
@@ -37,9 +37,9 @@ export default (
     //
     const socketServer = new SocketServer();
     socketServer.use("/api/game", getGameController(GameStateType));
+    socketServer.use("/lobby", LobbyController);
     app.use('/api', apiController(socketServer));
 
-    app.use("/api/lobby", LobbyController.routes);
     routes.forEach(route => {
         app.use(route.path, route.router);
     })

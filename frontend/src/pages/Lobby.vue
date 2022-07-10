@@ -31,7 +31,6 @@ export default class Lobby extends Vue implements LobbyListener {
     username: string = Core.getUsername() || '';
 
     mounted() {
-        this.model.setUpdateRate(1000);
         this.model.listen(this);
     }
 

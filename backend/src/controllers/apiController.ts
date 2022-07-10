@@ -17,8 +17,14 @@ export function apiController(socketServer: SocketServer) {
             : Game.getGame(parsedReq.get('gameId') || '');
         const player = game.join(username);
 
-        socketServer.connect(ws, req, player.id, game);
+        socketServer.connect(ws, req, player, game);
     });
+
+    socketServer.onConnect((sendAll, player) => {
+        sendAll('/lobby/player-joined', {
+            playerName: player.username
+        });
+    })
 
     return router;
 }
