@@ -32,15 +32,12 @@ export function parseReqParams(req: Request) {
 export default class SocketServer extends SocketRouter {
     // TODO: set up deletion on disconnect
     // TODO: we'll need to figure out middleware
-    private connectHandler: ConnectHandler;
-    private connectedSockets: ws[] = [];
+    private connectedSockets: {[userId: string]: ws} = {};
 
-    public connect(ws: ws, req: Request, player: Player, game: Game) {
-        const connectionParams = parseReqParams(req);
-        
+    public connect(ws: ws, player: Player, game: Game) {
         ws.on('message', (msg) => {
             const parsedMessage = JSON.parse(msg.toString());
-            const path = parsedMessage.path; // TODO constantize this
+            const path = parsedMessage.path;
             const reqBody = parsedMessage.body;
             if (!this.handlers[path]) {
                 throw new Error('Unknown path');
@@ -53,22 +50,16 @@ export default class SocketServer extends SocketRouter {
             );
         });
 
-        this.connectHandler((path, responseBody) => {
-            this.connectedSockets.forEach((otherSocket: ws) => {
-                otherSocket.send(JSON.stringify({ path, body: responseBody }))
-            })
-        }, player, game);
+        if (this.connectedSockets[player.id]) {
+            this.connectedSockets[player.id].close();
+        }
 
-        this.connectedSockets.push(ws);
+        this.connectedSockets[player.id] = ws;
     }
-
-    public onConnect(handler: ConnectHandler) {
-        this.connectHandler = handler;
+    
+    public sendAll(path: string, body: any) {
+        Object.values(this.connectedSockets).forEach((otherSocket: ws) => {
+            otherSocket.send(JSON.stringify({ path, body }))
+        })
     }
 }
-
-type ConnectHandler = (
-    sendAll: (path: string, responseBody: any) => void,
-    player: Player,
-    game: Game,
-) => void;

@@ -29,8 +29,8 @@
 
 <script lang="ts">
 import PieceMixin from "../mixins/PieceMixin";
-import Core, { PieceLocation } from "../index";
-import { BoardId } from "@plyb/web-game-core-shared/src/model/gameState/Board";
+import Core from "../core";
+import { BoardId, PieceLocation } from "@plyb/web-game-core-shared/src/model/gameState/Board";
 import { mixins, Options, prop, Vue, WithDefault } from "vue-class-component";
 import BubbleMenu from "./BubbleMenu.vue";
 import PieceComponent from "./Piece.vue";

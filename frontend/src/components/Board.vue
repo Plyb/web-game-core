@@ -32,12 +32,11 @@
 </template>
 
 <script lang="ts">
-import { Board } from "../index";
 import StateStore from "../StateStore";
 import MovePiecesAction, { ContainerType } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 import { Options, prop, Vue } from "vue-class-component";
 import PlacedPiece from "./PlacedPiece.vue";
-import { Piece, PieceLocation } from "@plyb/web-game-core-shared";
+import { Piece, PieceLocation, Board } from "@plyb/web-game-core-shared";
 
 class Props {
     model: Board = prop({

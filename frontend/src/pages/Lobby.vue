@@ -22,7 +22,7 @@
 <script lang="ts">
 import { Vue } from "vue-class-component";
 import LobbyModel, { LobbyListener } from "../lobby";
-import Core from "../index";
+import Core from "../core";
 
 // TODO: move this to a mixin
 export default class Lobby extends Vue implements LobbyListener {

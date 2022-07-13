@@ -1,5 +1,5 @@
 import axios from "axios";
-import Core, { sendRequest, setSocketListener } from "./index";
+import Core, { sendRequest, setSocketListener } from "./core";
 import SocketListener from "./socketListener";
 
 export default class Lobby {

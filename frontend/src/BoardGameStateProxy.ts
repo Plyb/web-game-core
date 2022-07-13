@@ -1,5 +1,5 @@
 import { Board, BoardGameState, Piece } from "@plyb/web-game-core-shared";
-import Core from "./index"
+import Core from "./core"
 import axios from "axios";
 import Action from "@plyb/web-game-core-shared/src/actions/Action";
 import { ActionConstructor, ParametersExceptFirst } from "@plyb/web-game-core-shared/src/model/gameState/BoardGameState";

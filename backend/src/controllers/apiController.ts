@@ -17,13 +17,22 @@ export function apiController(socketServer: SocketServer) {
             : Game.getGame(parsedReq.get('gameId') || '');
         const player = game.join(username);
 
-        socketServer.connect(ws, req, player, game);
+        socketServer.connect(ws, player, game);
+        socketServer.sendAll('/lobby/player-joined', {
+            playerName: player.username
+        })
     });
 
-    socketServer.onConnect((sendAll, player) => {
-        sendAll('/lobby/player-joined', {
-            playerName: player.username
-        });
+    router.ws('/reconnect', (ws, req) => {
+        const parsedReq = parseReqParams(req);
+        const userId = parsedReq.get('userId');
+        if (!userId) {
+            throw new Error('Missing parameter: userId');
+        }
+
+        const game = Game.getGame(parsedReq.get('gameId') || '');
+        const player = Object.values(game.players).find((p) => p.id === userId);
+        socketServer.connect(ws, player, game);
     })
 
     return router;

@@ -21,7 +21,8 @@
 
 <script lang="ts">
 import PieceMixin from "../mixins/PieceMixin";
-import { Piece, ShapeSpace, Vec2 } from "../index";
+import Piece, { ShapeSpace } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
+import { Vec2 } from "@plyb/web-game-core-shared";
 import StateStore from "../StateStore";
 import { MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 import { mixins, prop, Vue } from "vue-class-component";

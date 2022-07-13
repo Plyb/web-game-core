@@ -9,7 +9,7 @@ import { BoardId } from "@plyb/web-game-core-shared/src/model/gameState/Board";
 import DrawPile from "@plyb/web-game-core-shared/src/model/gameState/pieces/DrawPile";
 import { DragPiece } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
 import { PlayerId } from "@plyb/web-game-core-shared/src/model/player";
-import { BoardGameStateProxy } from "..";
+import BoardGameStateProxy from "./BoardGameStateProxy";
 
 export type Interaction = {
     label: string,

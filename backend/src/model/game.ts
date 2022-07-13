@@ -6,7 +6,7 @@ export default class Game {
     public static games : {[key: string]: (Game | undefined)} = {};
 
     public readonly id : string
-    private players: {[username: string]: Player | undefined} = {};
+    public readonly players: {[username: string]: Player | undefined} = {};
     private started = false;
     private _gameState: BoardGameState;
     public get gameState(): BoardGameState {

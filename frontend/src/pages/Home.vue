@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import Core from '../index';
+import Core from '../core';
 import { AxiosError } from 'axios'
 import { Vue, Options } from 'vue-class-component';
 

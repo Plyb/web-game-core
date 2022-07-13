@@ -1,4 +1,4 @@
-import { Piece } from "../index";
+import { Piece } from "@plyb/web-game-core-shared";
 import { prop, Vue } from "vue-class-component";
 
 export default abstract class PieceMixin extends Vue {

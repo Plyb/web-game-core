@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import Core, { Piece } from "../index";
+import Core from "../core";
 import { Options, prop, Vue } from "vue-class-component";
 import PieceComponent from "./Piece.vue";
 import BubbleMenu from "./BubbleMenu.vue";
@@ -46,6 +46,7 @@ import InspectPieceModal from "./InspectPieceModal.vue";
 import StateStore from "../StateStore";
 import MovePiecesAction, { ContainerType } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 import { getInventoryInteractions, Interactions } from "../pieceInteractions";
+import { Piece } from '@plyb/web-game-core-shared';
 
 class Props {
     pieces: Piece[] = prop({

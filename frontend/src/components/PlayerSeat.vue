@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { Board, Piece, Player, Vec2 } from "../index";
+import { Board, Piece, Player, Vec2 } from "@plyb/web-game-core-shared";
 import { Options, prop, Vue } from "vue-class-component";
 import BoardComponent from "./Board.vue";
 

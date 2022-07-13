@@ -64,7 +64,7 @@ import BoardComponent from './Board.vue'
 import { View, ViewType } from "./view";
 import Player from "@plyb/web-game-core-shared/src/model/player";
 import { Options, Vue } from "vue-class-component";
-import Core from '../index';
+import Core from '../core';
 import StateStore from "../StateStore";
 
 
