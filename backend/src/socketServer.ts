@@ -7,7 +7,8 @@ type MessageHandler = (params: {
     body: any,
     send: (responseBody: any) => void,
     userId: string,
-    game: Game
+    game: Game,
+    sendAll: (path: string, body?: any) => void
 }) => void
 
 export class SocketRouter {
@@ -47,6 +48,7 @@ export default class SocketServer extends SocketRouter {
                 send: (resBody) => ws.send(JSON.stringify({ id: parsedMessage.id, body: resBody})),
                 userId: player.id,
                 game,
+                sendAll: (path, body) => this.sendAll(path, body)
             });
         });
 

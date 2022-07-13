@@ -39,4 +39,11 @@ router.message('/get-players', ({send, game}) => {
     })
 });
 
+router.message('/remove-player', ({body, game, sendAll}) => {
+    game.leave(body.username);
+    sendAll('/lobby/player-left', {
+        playerName: body.username
+    });
+})
+
 export default router;

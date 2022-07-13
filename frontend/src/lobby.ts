@@ -17,6 +17,12 @@ export default class Lobby {
             this.playerNames.push(playerName);
         })
 
+        socketListener.message('/lobby/player-left', (body) => {
+            const playerName = body.playerName;
+            const playerIndex = this.playerNames.findIndex((player) => player === playerName)
+            this.playerNames.splice(playerIndex, 1);
+        })
+
         setSocketListener(socketListener);
         this.load();
     }
@@ -45,7 +51,7 @@ export default class Lobby {
 
     public async kick(username: string) {
         try {
-            await axios.delete(`/api/lobby/kick/${Core.getGameId()}/${username}`);
+            await sendRequest('/lobby/remove-player', {username});
         } catch (e) {
             console.error(e);
         }
