@@ -3,12 +3,12 @@ import { json, Request } from "express";
 import * as ws from 'ws';
 import Game from "./model/game";
 
-type MessageHandler = (
+type MessageHandler = (params: {
     body: any,
     send: (responseBody: any) => void,
     userId: string,
     game: Game
-) => void
+}) => void
 
 export class SocketRouter {
     protected handlers: {[path: string]: MessageHandler} = {};
@@ -42,12 +42,12 @@ export default class SocketServer extends SocketRouter {
             if (!this.handlers[path]) {
                 throw new Error('Unknown path');
             }
-            this.handlers[path](
-                reqBody,
-                (resBody) => ws.send(JSON.stringify({ id: parsedMessage.id, body: resBody})),
-                player.id,
-                game
-            );
+            this.handlers[path]({
+                body: reqBody,
+                send: (resBody) => ws.send(JSON.stringify({ id: parsedMessage.id, body: resBody})),
+                userId: player.id,
+                game,
+            });
         });
 
         if (this.connectedSockets[player.id]) {

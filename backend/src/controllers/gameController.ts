@@ -9,7 +9,7 @@ export function getGameController(GameStateType: StateConstructor) {
     const router = new SocketRouter();
 
     // TODO: constantize routes
-    router.message('/get-game-info', (msg, send, userId, game) => {
+    router.message('/get-game-info', ({send, userId, game}) => {
         send({
             gameId: game.id,
             userId,

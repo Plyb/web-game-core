@@ -32,11 +32,11 @@ import { SocketRouter } from "../socketServer";
 
 const router = new SocketRouter();
 
-router.message('/get-players', (body, send, userId, game) => {
+router.message('/get-players', ({send, game}) => {
     send({
         players: game.getPlayerNames(),
         started: game.isStarted(),
     })
-})
+});
 
 export default router;
