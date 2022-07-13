@@ -3,14 +3,13 @@ import Core, { sendRequest, setSocketListener } from "./index";
 import SocketListener from "./socketListener";
 
 export default class Lobby {
-    private playerNames: string[];
+    private playerNames: string[] = [];
     private timeoutId: number = -1;
     private loaded = false;
     private started = false;
     private listeners: LobbyListener[] = [];
 
-    constructor() {
-        this.playerNames = [];
+    public startListening() {
         const socketListener = new SocketListener();
 
         socketListener.message('/lobby/player-joined', (body) => {
@@ -25,7 +24,7 @@ export default class Lobby {
     private async load() {
         try {
             const response = await sendRequest('/lobby/get-players');
-            this.playerNames = response.body.players;
+            this.playerNames.push(...response.body.players);
             this.loaded = true;
             this.started = response.body.started;
             if (this.started) {
@@ -77,7 +76,7 @@ export default class Lobby {
         return this.started;
     }
 
-    public listen(listener: LobbyListener) {
+    public addListener(listener: LobbyListener) {
         this.listeners.push(listener);
     }
 

@@ -31,7 +31,8 @@ export default class Lobby extends Vue implements LobbyListener {
     username: string = Core.getUsername() || '';
 
     mounted() {
-        this.model.listen(this);
+        this.model.addListener(this);
+        this.model.startListening();
     }
 
     async kick(username: string) {
