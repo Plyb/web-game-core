@@ -12,7 +12,7 @@ export default class App extends Vue {
 
     async created() {
         const currentRoute = document.location.hash;
-        if (Core.getUserId() && currentRoute) { // Check that we aren't on the homepage
+        if (Core.getUserId() && currentRoute && currentRoute !== "#/") { // Check that we aren't on the homepage
             await reconnect();
         }
         this.loaded = true;

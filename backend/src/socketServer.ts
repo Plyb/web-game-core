@@ -1,6 +1,7 @@
 import { Player } from "@plyb/web-game-core-shared";
 import { json, Request } from "express";
 import * as ws from 'ws';
+import { log } from "./logger";
 import Game from "./model/game";
 
 type MessageHandler = (params: {
@@ -37,19 +38,25 @@ export default class SocketServer extends SocketRouter {
 
     public connect(ws: ws, player: Player, game: Game) {
         ws.on('message', (msg) => {
-            const parsedMessage = JSON.parse(msg.toString());
-            const path = parsedMessage.path;
-            const reqBody = parsedMessage.body;
-            if (!this.handlers[path]) {
-                throw new Error('Unknown path');
+            try {
+                const parsedMessage = JSON.parse(msg.toString());
+                const path = parsedMessage.path;
+                const reqBody = parsedMessage.body;
+                if (!this.handlers[path]) {
+                    throw new Error(`Unknown path: ${path}`);
+                }
+                this.handlers[path]({
+                    body: reqBody,
+                    send: (resBody) => ws.send(JSON.stringify({ id: parsedMessage.id, body: resBody})),
+                    userId: player.id,
+                    game,
+                    sendAll: (path, body) => this.sendAll(path, body)
+                });
+            } catch(error) {
+                console.log(error.message || error);
+                log(Game.getGame(game.id), 'Error: ' + error)
             }
-            this.handlers[path]({
-                body: reqBody,
-                send: (resBody) => ws.send(JSON.stringify({ id: parsedMessage.id, body: resBody})),
-                userId: player.id,
-                game,
-                sendAll: (path, body) => this.sendAll(path, body)
-            });
+            
         });
 
         if (this.connectedSockets[player.id]) {
