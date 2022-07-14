@@ -4,10 +4,14 @@ import SocketListener from './socketListener';
 let socket: WebSocketAsPromised;
 
 export async function sendRequest(path: string, body?: any) {
-	return await socket.sendRequest({
+	const response = await socket.sendRequest({
 		path,
 		body
 	});
+	if (response?.error) {
+		throw new WebsocketResponseError(response.body);
+	}
+	return response;
 }
 
 async function startGame(username: string) {
@@ -89,4 +93,8 @@ export default {
 	getGameId,
 	getUsername,
 	getUserId,
+}
+
+class WebsocketResponseError extends Error {
+	name = 'WebsocketResponseError';
 }

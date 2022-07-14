@@ -38,8 +38,8 @@ export default class SocketServer extends SocketRouter {
 
     public connect(ws: ws, player: Player, game: Game) {
         ws.on('message', (msg) => {
+            const parsedMessage = JSON.parse(msg.toString());
             try {
-                const parsedMessage = JSON.parse(msg.toString());
                 const path = parsedMessage.path;
                 const reqBody = parsedMessage.body;
                 if (!this.handlers[path]) {
@@ -54,7 +54,8 @@ export default class SocketServer extends SocketRouter {
                 });
             } catch(error) {
                 console.log(error.message || error);
-                log(Game.getGame(game.id), 'Error: ' + error)
+                log(Game.getGame(game.id), 'Error: ' + error);
+                ws.send(JSON.stringify({id: parsedMessage.id, error: true, body: error.message || error}));
             }
             
         });

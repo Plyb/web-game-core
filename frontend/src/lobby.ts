@@ -51,7 +51,7 @@ export default class Lobby {
 
     public async kick(username: string) {
         try {
-            await sendRequest('/lobby/remove-player', {username});
+            await sendRequest('/lobby/remove-player2', {username});
         } catch (e) {
             console.error(e);
         }
