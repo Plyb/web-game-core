@@ -6,7 +6,7 @@ import Game from "./model/game";
 
 type MessageHandler = (params: {
     body: any,
-    send: (responseBody: any) => void,
+    send: (responseBody?: any) => void,
     userId: string,
     game: Game,
     sendAll: (path: string, body?: any) => void

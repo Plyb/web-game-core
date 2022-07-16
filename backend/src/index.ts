@@ -36,7 +36,7 @@ export default (
     // testing
     //
     const socketServer = new SocketServer();
-    socketServer.use("/api/game", getGameController(GameStateType));
+    socketServer.use("/game", getGameController(GameStateType));
     socketServer.use("/lobby", LobbyController);
     app.use('/api', apiController(socketServer));
 

@@ -1,5 +1,5 @@
 import { Board, BoardGameState, Piece } from "@plyb/web-game-core-shared";
-import Core from "./core"
+import Core, { sendRequest } from "./core"
 import axios from "axios";
 import Action from "@plyb/web-game-core-shared/src/actions/Action";
 import { ActionConstructor, ParametersExceptFirst } from "@plyb/web-game-core-shared/src/model/gameState/BoardGameState";
@@ -22,36 +22,13 @@ export default class BoardGameStateProxy extends BoardGameState {
         super([]);
     }
 
-    public async setUpdateRate(updateRate: number) {
-        this.updateRate = updateRate;
-        const result = await this.load();
-        this.setUpdateTimeout();
-        return result;
-    }
-
-    private setUpdateTimeout() {
-        clearTimeout(this.timeoutId);
-        this.timeoutId = window.setTimeout(
-            async () => {
-                try {
-                    await this.update();
-                    this.setUpdateTimeout();
-                } catch(e) {
-                    this.reload();
-                }
-            },
-            this.updateRate
-        );
-    }
-
     public async load() {
         this.updateController.abort();
-        const response = await axios.get(`api/game/state/${Core.getGameId()}`);
-        const originalGameState = JSON.parse(response.data.originalGameState);
-        const actions = response.data.actions;
+        const response = await sendRequest('/game/load-state');
+        const originalGameState = JSON.parse(response.body.originalGameState);
+        const actions = response.body.actions;
         this.updateFromPlain(originalGameState);
         this.applyActions(actions);
-        this.setUpdateTimeout();
     }
 
     private async reload() {
@@ -65,7 +42,7 @@ export default class BoardGameStateProxy extends BoardGameState {
     }
 
     public async executeAndSendAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
-        this.pauseUpdatesForExecute();
+        // this.pauseUpdatesForExecute();
         const action = new actionType(this, ...args);
         action.execute();
         const parent = this.actionHistory.getLast();
@@ -93,23 +70,8 @@ export default class BoardGameStateProxy extends BoardGameState {
         } catch (e) {
             await this.reload();
         }
-        this.resumeUpdatesFromExecute();
+        // this.resumeUpdatesFromExecute();
         return action;
-    }
-
-    private pauseUpdatesForExecute() {
-        this.numActionsEnRoute++;
-        clearTimeout(this.timeoutId);
-        this.updateController.abort();
-    }
-
-    private resumeUpdatesFromExecute() {
-        this.numActionsEnRoute--;
-        if (!this.numActionsEnRoute) {
-            clearTimeout(this.timeoutId);
-            this.setUpdateTimeout();
-            this.reloadOccured = false;
-        }
     }
 
     private async update() {

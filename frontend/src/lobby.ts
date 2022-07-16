@@ -51,7 +51,7 @@ export default class Lobby {
 
     public async kick(username: string) {
         try {
-            await sendRequest('/lobby/remove-player2', {username});
+            await sendRequest('/lobby/remove-player', {username});
         } catch (e) {
             console.error(e);
         }
@@ -64,9 +64,7 @@ export default class Lobby {
 
     public async startGame() {
         try {
-            await axios.post(`/api/game/start`, {
-                gameId: Core.getGameId(),
-            });
+            await sendRequest('/game/start');
             this.onGameStarted();
         } catch (e) {
             console.error(e);

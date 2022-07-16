@@ -70,7 +70,7 @@ export default class GamePage extends Vue {
 
     public async created() {
         StateStore.state = this.gameState; // Get the reactiveness here
-        await this.gameState.setUpdateRate(1000);
+        await this.gameState.load();
     }
 
     public get availableViews(): LabeledView[] {

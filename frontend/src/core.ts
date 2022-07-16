@@ -42,7 +42,7 @@ async function connectToGame(username: string, gameId?: string) {
   			extractRequestId: data => data?.id, 
 		});
 		await socket.open();
-		const res = await sendRequest('/api/game/get-game-info');
+		const res = await sendRequest('/game/get-game-info');
 		const {gameId: newGameId, userId} = res.body;
 		sessionStorage.setItem('gameId', newGameId);
 		sessionStorage.setItem('userId', userId);

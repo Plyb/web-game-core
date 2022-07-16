@@ -16,6 +16,18 @@ export function getGameController(GameStateType: StateConstructor) {
         });
     })
 
+    router.message('/start', ({game, send}) => {
+        game.start(GameStateType);
+        send();
+    })
+
+    router.message('/load-state', ({send, game}) => {
+        send({
+            originalGameState: game.originalGameStateJson,
+            actions: game.gameState.actionHistory.getAllActions(),
+        })
+    })
+
     // router.post('/', (req, res) => {
     //     const username = req.body.username;
     //     const game = Game.createNewGame();
