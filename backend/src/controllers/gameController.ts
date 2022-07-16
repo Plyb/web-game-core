@@ -16,9 +16,10 @@ export function getGameController(GameStateType: StateConstructor) {
         });
     })
 
-    router.message('/start', ({game, send}) => {
+    router.message('/start', ({game, send, sendAll}) => {
         game.start(GameStateType);
         send();
+        sendAll('/lobby/game-started', undefined, false);
     })
 
     router.message('/load-state', ({send, game}) => {
@@ -26,6 +27,26 @@ export function getGameController(GameStateType: StateConstructor) {
             originalGameState: game.originalGameStateJson,
             actions: game.gameState.actionHistory.getAllActions(),
         })
+    })
+
+    router.message('/do-action', async ({body, game, send, sendAll}) => {
+        const { id, parentId, actionType, actionArgs } = body;
+        try {
+            const actions = await game.gameState.executeAction(parentId, id, ActionTypes.actionTypes[actionType], ...actionArgs);
+            logAction(game, actionType, actionArgs);
+            send({ actions });
+            sendAll('/game/action-done', {
+                type: actionType,
+                args: actionArgs,
+                id,
+            }, false);
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new Error(e.message + ", did you forget to add it using ActionTypes.addActionType(...)?");
+            } else {
+                throw e;
+            }
+        }
     })
 
     // router.post('/', (req, res) => {

@@ -9,7 +9,7 @@ type MessageHandler = (params: {
     send: (responseBody?: any) => void,
     userId: string,
     game: Game,
-    sendAll: (path: string, body?: any) => void
+    sendAll: (path: string, body?: any, includeRequester?: boolean) => void
 }) => void
 
 export class SocketRouter {
@@ -50,7 +50,8 @@ export default class SocketServer extends SocketRouter {
                     send: (resBody) => ws.send(JSON.stringify({ id: parsedMessage.id, body: resBody})),
                     userId: player.id,
                     game,
-                    sendAll: (path, body) => this.sendAll(path, body)
+                    sendAll: (path, body, includeRequester: boolean = true) => 
+                        this.sendAll(path, body, includeRequester ? undefined : player.id)
                 });
             } catch(error) {
                 console.log(error.message || error);
@@ -67,9 +68,12 @@ export default class SocketServer extends SocketRouter {
         this.connectedSockets[player.id] = ws;
     }
     
-    public sendAll(path: string, body: any) {
-        Object.values(this.connectedSockets).forEach((otherSocket: ws) => {
-            otherSocket.send(JSON.stringify({ path, body }))
+    public sendAll(path: string, body: any, excludeUser?: string) {
+        Object.entries(this.connectedSockets).forEach((entry) => {
+            const [userId, otherSocket] = entry;
+            if (userId !== excludeUser) {
+                otherSocket.send(JSON.stringify({ path, body }));
+            }
         })
     }
 }

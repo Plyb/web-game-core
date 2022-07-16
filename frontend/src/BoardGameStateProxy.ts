@@ -1,5 +1,5 @@
 import { Board, BoardGameState, Piece } from "@plyb/web-game-core-shared";
-import Core, { sendRequest } from "./core"
+import Core, { sendRequest, setSocketListener } from "./core"
 import axios from "axios";
 import Action from "@plyb/web-game-core-shared/src/actions/Action";
 import { ActionConstructor, ParametersExceptFirst } from "@plyb/web-game-core-shared/src/model/gameState/BoardGameState";
@@ -10,6 +10,7 @@ import ActionTypes from "@plyb/web-game-core-shared/src/actions/ActionTypes";
 import { MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 import { DragPiece } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
 import AlertCore from "./AlertCore";
+import SocketListener from "./socketListener";
 
 export default class BoardGameStateProxy extends BoardGameState {
     public selectedPieces: DragPiece[] = [];
@@ -29,6 +30,18 @@ export default class BoardGameStateProxy extends BoardGameState {
         const actions = response.body.actions;
         this.updateFromPlain(originalGameState);
         this.applyActions(actions);
+
+        const socketListener = new SocketListener();
+        socketListener.message('/game/action-done', (body) => {
+            try {
+                this.applyActions([body]);
+            } catch (e: any) {
+                if (!this.updateController.signal.aborted) {
+                    this.reload();
+                }
+            }
+        });
+        setSocketListener(socketListener);
     }
 
     private async reload() {
@@ -48,14 +61,14 @@ export default class BoardGameStateProxy extends BoardGameState {
         const parent = this.actionHistory.getLast();
         this.actionHistory.add(action, args);
         try {
-            const response = await axios.post('api/game/state/action', {
+            const response = await sendRequest('/game/do-action', {
                 gameId: Core.getGameId(),
                 actionType: action.name,
                 actionArgs: args,
                 id: action.id,
                 parentId: parent?.action.id
             });
-            const ancestors: ActionDefinition[] = response.data.actions;
+            const ancestors: ActionDefinition[] = response.body.actions;
             if (ancestors.length && !this.reloadOccured) {
                 const numActionsToRemove = this.actionHistory.getSince(action.id).length + 1;
                 const removedActions: ActionDefinition[] = [];

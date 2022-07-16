@@ -15,12 +15,16 @@ export default class Lobby {
         socketListener.message('/lobby/player-joined', (body) => {
             const playerName = body.playerName;
             this.playerNames.push(playerName);
-        })
+        });
 
         socketListener.message('/lobby/player-left', (body) => {
             const playerName = body.playerName;
             const playerIndex = this.playerNames.findIndex((player) => player === playerName)
             this.playerNames.splice(playerIndex, 1);
+        });
+
+        socketListener.message('/lobby/game-started', () => {
+            this.onGameStarted();
         })
 
         setSocketListener(socketListener);

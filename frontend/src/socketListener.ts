@@ -22,7 +22,7 @@ export default class SocketListener {
             const reqBody = parsedMessage.body;
 
             if (!this.handlers[path]) {
-                throw new Error('Unknown path');
+                throw new Error(`Unknown path: ${path}`);
             }
             this.handlers[path](reqBody);
         }
