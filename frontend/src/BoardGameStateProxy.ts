@@ -1,52 +1,46 @@
 import { Board, BoardGameState, Piece } from "@plyb/web-game-core-shared";
-import Core, { sendRequest, setSocketListener } from "./core"
-import axios from "axios";
+import Core, { sendRequest, setSocketListener } from "./core";
 import Action from "@plyb/web-game-core-shared/src/actions/Action";
 import { ActionConstructor, ParametersExceptFirst } from "@plyb/web-game-core-shared/src/model/gameState/BoardGameState";
 import { BoardId } from "@plyb/web-game-core-shared/src/model/gameState/Board";
 import { PieceTypes } from "@plyb/web-game-core-shared/src/model/gameState/pieces/PieceTypes";
-import { ActionDefinition } from "@plyb/web-game-core-shared/src/model/gameState/ActionHistory";
+import { ActionDefinition, ActionNode } from "@plyb/web-game-core-shared/src/model/gameState/ActionHistory";
 import ActionTypes from "@plyb/web-game-core-shared/src/actions/ActionTypes";
-import { MoveLocation } from "@plyb/web-game-core-shared/src/actions/MovePiecesAction";
 import { DragPiece } from "@plyb/web-game-core-shared/src/model/gameState/pieces/Piece";
 import AlertCore from "./AlertCore";
 import SocketListener from "./socketListener";
 
 export default class BoardGameStateProxy extends BoardGameState {
     public selectedPieces: DragPiece[] = [];
-    private timeoutId: number = -1;
-    private updateRate: number = 1000;
-    private numActionsEnRoute = 0;
-    private updateController = new AbortController();
-    private reloadOccured = false;
     constructor() {
         super([]);
     }
 
     public async load() {
-        this.updateController.abort();
         const response = await sendRequest('/game/load-state');
-        const originalGameState = JSON.parse(response.body.originalGameState);
-        const actions = response.body.actions;
-        this.updateFromPlain(originalGameState);
-        this.applyActions(actions);
+        this.applyLoadResponse(response.body);
 
         const socketListener = new SocketListener();
-        socketListener.message('/game/action-done', (body) => {
+        socketListener.message('/game/action-done', async (body) => {
             try {
-                this.applyActions([body]);
+                const { action, parentId } = body;
+                await this.executeAction(parentId, action.id, ActionTypes.actionTypes[action.type], ...action.args);
             } catch (e: any) {
-                if (!this.updateController.signal.aborted) {
-                    this.reload();
-                }
+                this.reload();
             }
         });
         setSocketListener(socketListener);
     }
 
+    private applyLoadResponse(responseBody: {originalGameState: string, actions: ActionDefinition[]}) {
+        const originalGameState = JSON.parse(responseBody.originalGameState);
+        const actions = responseBody.actions;
+        this.updateFromPlain(originalGameState);
+        this.applyActions(actions);
+    }
+
     private async reload() {
         AlertCore.warning('Reloading game state...', 3000);
-        this.reloadOccured = true;
         await this.load();
     }
 
@@ -55,7 +49,6 @@ export default class BoardGameStateProxy extends BoardGameState {
     }
 
     public async executeAndSendAction<T extends ActionConstructor>(actionType: T, ...args: ParametersExceptFirst<T>): Promise<Action> {
-        // this.pauseUpdatesForExecute();
         const action = new actionType(this, ...args);
         action.execute();
         const parent = this.actionHistory.getLast();
@@ -68,37 +61,14 @@ export default class BoardGameStateProxy extends BoardGameState {
                 id: action.id,
                 parentId: parent?.action.id
             });
-            const ancestors: ActionDefinition[] = response.body.actions;
-            if (ancestors.length && !this.reloadOccured) {
-                const numActionsToRemove = this.actionHistory.getSince(action.id).length + 1;
-                const removedActions: ActionDefinition[] = [];
-                for (let i = 0; i < numActionsToRemove; i++) {
-                    const removed = this.actionHistory.removeLast();
-                    if (removed) {
-                        removedActions.push(removed);
-                    }
-                }
-                this.applyActions([...ancestors, ...removedActions.reverse()]);
+            if (response.failed) {
+                this.applyLoadResponse(response);
             }
         } catch (e) {
+            // Shouldn't ever get here, but keeping it in case
             await this.reload();
         }
-        // this.resumeUpdatesFromExecute();
         return action;
-    }
-
-    private async update() {
-        try {
-            this.updateController = new AbortController();
-            const response = await axios.get(`api/game/state/actions/${Core.getGameId()}/${this.actionHistory.getLast()?.action.id}`, {
-                signal: this.updateController.signal
-            });
-            this.applyActions(response.data.actions);
-        } catch (e: any) {
-            if (!this.updateController.signal.aborted) {
-                this.reload();
-            }
-        }
     }
 
     private applyActions(actions: ActionDefinition[]) {
@@ -108,7 +78,20 @@ export default class BoardGameStateProxy extends BoardGameState {
             action.execute();
             this.actionHistory.add(action, actionDef.args);
         });
+    }
 
+    protected applyActionInOrder(action: Action, constructorArgs: any[], parentId?: string): ActionNode {
+        const rewound = this.actionHistory.rewindUntil(parentId);
+        action.execute();
+        const node = this.actionHistory.add(action, constructorArgs);
+        rewound.forEach((rewoundActionDef) => {
+            const type = ActionTypes.actionTypes[rewoundActionDef.type];
+            const rewoundAction = new type(this, ...rewoundActionDef.args); // TODO this is very code duplicated, fix
+            rewoundAction.id = rewoundActionDef.id;
+            rewoundAction.execute();
+            this.actionHistory.add(rewoundAction, rewoundActionDef.args);
+        });
+        return node;
     }
 
     private updateFromPlain(plain: BoardGameState) {

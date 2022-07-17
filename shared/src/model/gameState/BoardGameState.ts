@@ -55,23 +55,27 @@ export default class BoardGameState {
         });
     }
 
-    // TODO: proxy doesn't need this method. We might want to extract it out into another class
     public async executeAction<T extends ActionConstructor>(parentId: string | undefined, id: string, actionType: T, ...args: ParametersExceptFirst<T>): Promise<ActionDefinition[]> {
         const actionInstance = new actionType(this, ...args);
         actionInstance.id = id;
         const parent = parentId === undefined ? null : 
             (this.actionHistory.getById(parentId) || await this.waitForActionWithId(parentId));
-        actionInstance.execute();
+        const node = this.applyActionInOrder(actionInstance, args, parentId);
         const descendants: ActionDefinition[] = this.actionHistory.getDescendants(parent);
-        const node = this.actionHistory.add(actionInstance, args);
         this.actionPromises.get(actionInstance.id)?.resolve(node);
         return descendants;
     }
 
-    private async waitForActionWithId(id: string) {
+    protected async waitForActionWithId(id: string) {
         const promise = new ActionNodePromise();
         this.actionPromises.set(id, promise);
         return promise.promise;
+    }
+
+    // Intended to be overridden in Proxy
+    protected applyActionInOrder(action: Action, constructorArgs: any[], parentId?: string): ActionNode {
+        action.execute();
+        return this.actionHistory.add(action, constructorArgs);
     }
 
     public getBoard(boardId: BoardId) {

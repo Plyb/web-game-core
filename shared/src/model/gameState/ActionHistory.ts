@@ -114,6 +114,19 @@ export default class ActionHistory {
 
         return null;
     }
+
+    rewindUntil(id?: string) {
+        const rewound = [];
+        let node = this.last;
+        while (node && node?.action.id !== id) {
+            const rewoundActionDef = this.removeLast();
+            if (rewoundActionDef) {
+                rewound.push(rewoundActionDef)
+            }
+            node = node.prev;
+        }
+        return rewound.reverse();
+    }
 }
 
 function toActionDefinition(node: ActionNode): ActionDefinition {
