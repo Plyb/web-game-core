@@ -1,7 +1,7 @@
 import Action from "./Action";
 import CollectIntoDrawPileAction from "./CollectIntoDrawPileAction";
 import DrawPieceAction from "./DrawPieceAction";
-import FlipDrawPileAction from "./FlipDrawPileAction";
+import FlipPieceAction from "./FlipPieceAction";
 import MovePiecesAction from "./MovePiecesAction";
 import RedoAction from "./RedoAction";
 import RotatePieceAction from "./RotatePieceAction";
@@ -31,7 +31,7 @@ const defaultActionTypes = {
     MovePiecesAction,
     DrawPieceAction,
     ShuffleAction,
-    FlipDrawPileAction,
+    FlipPieceAction,
     CollectIntoDrawPileAction,
 }
 

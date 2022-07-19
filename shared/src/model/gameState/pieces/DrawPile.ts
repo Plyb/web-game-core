@@ -3,9 +3,10 @@ import { Type } from "class-transformer";
 import { PieceTypes } from "./PieceTypes";
 import { MoveLocation } from "../../../actions/MovePiecesAction";
 import BoardGameState from "../BoardGameState";
+import FlippablePiece from "./FlippablePiece";
 
 
-export default class DrawPile<PieceType extends Piece> extends Piece {
+export default class DrawPile<PieceType extends Piece> extends FlippablePiece {
     @Type(() => Piece, {
         discriminator: PieceTypes.getClassTransformerDiscriminator(),
     })

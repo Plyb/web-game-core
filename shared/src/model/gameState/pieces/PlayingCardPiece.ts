@@ -1,3 +1,4 @@
+import FlippablePiece from "./FlippablePiece";
 import Piece, { ShapeSpace } from "./Piece"
 
 export enum Suit {
@@ -7,18 +8,23 @@ export enum Suit {
     Spades = "Spades",
     Joker = "Joker",
 }
-export default class PlayingCard extends Piece {
+export default class PlayingCard extends FlippablePiece {
     public readonly shape = [
         [ShapeSpace.Filled],
         [ShapeSpace.Filled],
     ];
     public readonly pivot = { x: 0, y: 0 };
+    public flipped = false;
 
     constructor(
         public readonly number: number,
         public readonly suit: Suit,
     ) {
         super();
+    }
+
+    public flip() {
+        this.flipped = !this.flipped;
     }
     
     public getName(): string {

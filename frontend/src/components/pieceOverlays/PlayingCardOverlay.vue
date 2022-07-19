@@ -1,6 +1,6 @@
 <template>
 <div class="piece">
-    <div v-if="!isJoker" class="cell">
+    <div v-if="!isJoker && !piece.flipped" class="cell">
         <svg
             width="100%"
             height="100%"
@@ -49,14 +49,18 @@ export default class PlayingCardOverlay extends PieceOverlay<PlayingCardPiece>()
     }
 
     get suitAssetSource() {
-        const suitAssetName = {
+        const suitAssetNames = {
             [Suit.Clubs]: "club",
             [Suit.Diamonds]: "diamond",
             [Suit.Hearts]: "heart",
             [Suit.Spades]: "spade",
             [Suit.Joker]: "joker",
-        }
-        return require(`../../assets/cards/${suitAssetName[this.piece.suit]}.svg`);
+        };
+
+        const suitAssetName = this.piece.flipped
+            ? "flipped"
+            : suitAssetNames[this.piece.suit];
+        return require(`../../assets/cards/${suitAssetName}.svg`);
     }
 }
 </script>
