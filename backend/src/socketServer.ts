@@ -37,7 +37,7 @@ export default class SocketServer extends SocketRouter {
     private connectedSockets: {[userId: string]: ws} = {};
 
     public connect(ws: ws, player: Player, game: Game) {
-        ws.on('message', (msg) => {
+        ws.on('message', async (msg) => {
             const parsedMessage = JSON.parse(msg.toString());
             try {
                 const path = parsedMessage.path;
@@ -45,7 +45,7 @@ export default class SocketServer extends SocketRouter {
                 if (!this.handlers[path]) {
                     throw new Error(`Unknown path: ${path}`);
                 }
-                this.handlers[path]({
+                await this.handlers[path]({
                     body: reqBody,
                     send: (resBody) => ws.send(JSON.stringify({ id: parsedMessage.id, body: resBody})),
                     userId: player.id,
