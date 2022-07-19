@@ -142,6 +142,28 @@ export default class MovePiecesAction extends Action {
                     const board = this.getBoard(boardId);
                     board.pieces = board.pieces.filter((pieceLocation) => !pieceFroms.some((pieceFrom) => pieceFrom.pieceId === pieceLocation.piece.id));
                 }
+
+                // Remove pieces from other inventories (if any)
+                const froms = this.pieces
+                    .filter((pieceFrom) => pieceFrom.from.containerType === ContainerType.Inventory)
+                    .map((pieceFrom) => pieceFrom.from);
+                const inventoriesToIndices = froms.reduce((prev, curr) => {
+                    if (!prev[curr.containerId]) {
+                        prev[curr.containerId] = [];
+                    }
+                    prev[curr.containerId].push(curr.index);
+                    return prev;
+                }, {} as {[invId: string]: number[]});
+                for (const [inventoryId, indices] of Object.entries(inventoriesToIndices)) {
+                    if (inventoryId === this.to.containerId && this.to.containerType === ContainerType.Inventory) {
+                        continue;
+                    }
+
+                    const inventory = this.getInventory(inventoryId);
+                    const indicesSet = new Set(indices);
+                    inventory.splice(0, inventory.length, ...inventory.filter((piece, index) => !indicesSet.has(index)));
+                }
+
                 break;
         }
     }
