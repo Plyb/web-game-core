@@ -34,7 +34,7 @@ export function parseReqParams(req: Request) {
 export default class SocketServer extends SocketRouter {
     // TODO: set up deletion on disconnect
     // TODO: we'll need to figure out middleware
-    private connectedSockets: {[userId: string]: ws} = {};
+    private connectedSockets: {[gameId: string]: {[userId: string]: ws}} = {};
 
     public connect(ws: ws, player: Player, game: Game) {
         ws.on('message', async (msg) => {
@@ -51,7 +51,7 @@ export default class SocketServer extends SocketRouter {
                     userId: player.id,
                     game,
                     sendAll: (path, body, includeRequester: boolean = true) => 
-                        this.sendAll(path, body, includeRequester ? undefined : player.id)
+                        this.sendAll(game.id, path, body, includeRequester ? undefined : player.id)
                 });
             } catch(error) {
                 console.log(error.message || error);
@@ -61,19 +61,30 @@ export default class SocketServer extends SocketRouter {
             
         });
 
-        if (this.connectedSockets[player.id]) {
-            this.connectedSockets[player.id].close();
+        if (this.connectedSockets[game.id]?.[player.id]) {
+            this.connectedSockets[game.id]?.[player.id].close();
         }
 
-        this.connectedSockets[player.id] = ws;
+        if (!this.connectedSockets[game.id]) {
+            this.connectedSockets[game.id] = {};
+        }
+
+        this.connectedSockets[game.id][player.id] = ws;
     }
     
-    public sendAll(path: string, body: any, excludeUser?: string) {
+    public sendAll(gameIdToSendTo: string, path: string, body: any, excludeUser?: string) {
         Object.entries(this.connectedSockets).forEach((entry) => {
-            const [userId, otherSocket] = entry;
-            if (userId !== excludeUser) {
-                otherSocket.send(JSON.stringify({ path, body }));
+            const [gameId, gameEntry] = entry;
+            if (gameId !== gameIdToSendTo) {
+                return;
             }
+
+            Object.entries(gameEntry).forEach((playerEntry) => {
+                const [userId, otherSocket] = playerEntry;
+                if (userId !== excludeUser) {
+                    otherSocket.send(JSON.stringify({ path, body }));
+                }
+            })
         })
     }
 }

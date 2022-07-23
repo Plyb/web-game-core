@@ -18,7 +18,7 @@ export function apiController(socketServer: SocketServer) {
         const player = game.join(username);
 
         socketServer.connect(ws, player, game);
-        socketServer.sendAll('/lobby/player-joined', {
+        socketServer.sendAll(game.id, '/lobby/player-joined', {
             playerName: player.username
         })
     });
